@@ -556,17 +556,17 @@ body::after {
   background:
     radial-gradient(ellipse 80% 60% at 60% 30%, rgba(0,229,255,0.15) 0%, transparent 60%),
     radial-gradient(ellipse 60% 80% at 30% 70%, rgba(255,31,113,0.12) 0%, transparent 50%),
-    linear-gradient(135deg, #0a0f1c 0%, #131c30 100%);
+    url('uploads/cat_monitores.png') center/cover no-repeat;
 }
 .cat-bg-2 {
   background:
     radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255,31,113,0.2) 0%, transparent 60%),
-    linear-gradient(135deg, #0d1220 0%, #151f35 100%);
+    url('uploads/cat_hardware.png') center/cover no-repeat;
 }
 .cat-bg-3 {
   background:
     radial-gradient(ellipse 80% 60% at 30% 50%, rgba(0,229,255,0.15) 0%, transparent 60%),
-    linear-gradient(135deg, #0a0f1c 0%, #0d1a2a 100%);
+    url('uploads/cat_perifericos.png') center/cover no-repeat;
 }
 
 /* Icon decoration for cat cards */
@@ -3092,6 +3092,277 @@ body.is-authed .user-btn::after {
   .detail-order-grid { grid-template-columns: 1fr; }
   .detail-order-info { position: static; }
 }
+/* ══════════════════════════════════════
+   POLICY PAGES — SHIPPING / DEVOLUCIONES / PRIVACIDAD
+══════════════════════════════════════ */
+.policy-hero {
+  height: 50vh; min-height: 360px;
+  position: relative; display: flex; align-items: flex-end;
+  overflow: hidden;
+}
+.policy-hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(255,31,113,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(0,229,255,0.1) 0%, transparent 50%),
+    linear-gradient(160deg, #070B14 0%, #0D1220 100%);
+}
+.policy-hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.policy-hero-content {
+  position: relative; z-index: 1;
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 2rem 3rem;
+  width: 100%;
+}
+.policy-hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.9;
+}
+
+.policy-layout {
+  max-width: 1280px; margin: 0 auto;
+  padding: 4rem 2rem;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+.policy-toc {
+  position: sticky; top: 100px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+.policy-toc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem; letter-spacing: 0.1em;
+  color: var(--cy); margin-bottom: 1rem;
+}
+.policy-toc-link {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.policy-toc-link:last-child { border-bottom: none; }
+.policy-toc-link:hover { color: var(--mg); padding-left: 8px; }
+.policy-toc-link.active { color: var(--mg); }
+
+.policy-content { display: flex; flex-direction: column; gap: 3rem; }
+
+.policy-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem; letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.policy-section-title span { color: var(--mg); }
+
+.policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.policy-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.policy-card:hover {
+  border-color: var(--mg);
+  box-shadow: 0 0 24px rgba(255,31,113,0.1);
+}
+.policy-card-icon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cy);
+  margin-bottom: 1rem;
+}
+.policy-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem; letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.policy-card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+.policy-badge {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem; letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  margin-bottom: 0.75rem;
+}
+.badge-free { background: var(--cy); color: #07111d; }
+.badge-express { background: var(--mg); color: #fff; }
+.badge-standard { background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid var(--border); }
+
+.policy-row {
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.policy-row-item {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 1rem; align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+  transition: border-color 0.2s;
+}
+.policy-row-item:hover { border-color: rgba(0,229,255,0.3); }
+.policy-row-label {
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  font-size: 0.9rem; color: var(--txt);
+}
+.policy-row-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.policy-row-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem; color: var(--cy); white-space: nowrap;
+}
+.policy-row-value.free { color: var(--cy); }
+.policy-row-value.highlight { color: var(--mg); }
+
+.policy-list {
+  display: flex; flex-direction: column; gap: 0;
+}
+.policy-list-item {
+  display: grid; grid-template-columns: 24px 1fr;
+  gap: 0.75rem; align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem; color: var(--muted); line-height: 1.5;
+}
+.policy-list-item:last-child { border-bottom: none; }
+.policy-list-icon { color: var(--cy); margin-top: 2px; flex-shrink: 0; }
+.policy-list-item strong { color: var(--txt); font-weight: 600; }
+
+.policy-note {
+  background: rgba(0,229,255,0.05);
+  border: 1px solid rgba(0,229,255,0.15);
+  border-left: 2px solid var(--cy);
+  padding: 1rem 1.25rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.1em;
+  color: var(--muted); line-height: 1.8;
+  text-transform: uppercase;
+}
+.policy-note strong { color: var(--cy); }
+
+.policy-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, var(--mg), var(--cy), transparent);
+  margin: 1rem 0;
+}
+
+.policy-contact-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.policy-contact-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+}
+.policy-contact-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--mg);
+}
+.policy-contact-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 2px;
+}
+.policy-contact-value { font-size: 0.85rem; color: var(--txt); }
+.policy-contact-value a { color: var(--cy); text-decoration: none; }
+.policy-contact-value a:hover { text-decoration: underline; }
+
+.policy-steps {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.policy-step {
+  display: grid; grid-template-columns: 40px 1fr;
+  gap: 1rem; align-items: flex-start;
+}
+.policy-step-num {
+  width: 40px; height: 40px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; color: var(--mg);
+  flex-shrink: 0;
+}
+.policy-step-body {}
+.policy-step-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  color: var(--txt); margin-bottom: 0.25rem;
+}
+.policy-step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+.policy-exception-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.policy-exception {
+  background: rgba(255,31,113,0.04);
+  border: 1px solid rgba(255,31,113,0.15);
+  padding: 1.25rem;
+}
+.policy-exception-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem; margin-bottom: 0.75rem;
+  color: var(--mg);
+}
+.policy-exception ul {
+  list-style: none; display: flex; flex-direction: column; gap: 0.4rem;
+}
+.policy-exception li {
+  font-size: 0.82rem; color: var(--muted);
+  padding-left: 1rem; position: relative;
+}
+.policy-exception li::before {
+  content: "—"; position: absolute; left: 0; color: var(--mg);
+}
+
+.policy-table {
+  width: 100%; border-collapse: collapse;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+}
+.policy-table tr { border-bottom: 1px solid var(--border); }
+.policy-table tr:last-child { border-bottom: none; }
+.policy-table td { padding: 0.7rem 0; }
+.policy-table td:first-child { color: var(--muted); width: 40%; }
+.policy-table td:last-child { color: var(--txt); }
+
+@media (max-width: 1024px) {
+  .policy-layout { grid-template-columns: 1fr; }
+  .policy-toc { position: static; }
+  .policy-grid { grid-template-columns: 1fr; }
+  .policy-contact-grid { grid-template-columns: 1fr; }
+  .policy-exception-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .policy-steps { gap: 0.75rem; }
+  .policy-step { grid-template-columns: 32px 1fr; }
+  .policy-step-num { width: 32px; height: 32px; font-size: 1rem; }
+}
+
 @media (max-width: 640px) {
   .order-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
   .order-row .order-link { grid-column: 1 / -1; justify-self: start; }
@@ -3836,6 +4107,647 @@ body.is-authed .user-btn::after {
   </div>
 </div>
 
+</div>
+
+<!-- ══ VIEW: POLÍTICA DE ENVÍOS ══ -->
+<div class="view" id="view-shipping">
+  <div class="policy-hero">
+    <div class="policy-hero-bg"></div>
+    <div class="policy-hero-grid"></div>
+    <div class="policy-hero-content">
+      <p style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--mg);letter-spacing:0.3em;margin-bottom:1rem">TECH-WHITE · CDMX</p>
+      <h1 class="policy-hero-title">POLÍTICA<br>DE <span style="color:var(--mg)">ENVÍOS</span></h1>
+    </div>
+  </div>
+
+  <div class="policy-layout">
+    <nav class="policy-toc">
+      <div class="policy-toc-title">Contenido</div>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-times').scrollIntoView({behavior:'smooth'})">Tiempos de entrega</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-costs').scrollIntoView({behavior:'smooth'})">Costos de envío</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-packaging').scrollIntoView({behavior:'smooth'})">Empaque y manejo</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-couriers').scrollIntoView({behavior:'smooth'})">Paqueterías</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-tracking').scrollIntoView({behavior:'smooth'})">Rastreo</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-incidents').scrollIntoView({behavior:'smooth'})">Incidencias</a>
+      <a class="policy-toc-link" onclick="document.getElementById('ship-contact').scrollIntoView({behavior:'smooth'})">Contacto</a>
+    </nav>
+
+    <div class="policy-content">
+
+      <!-- Tiempos -->
+      <div id="ship-times">
+        <h2 class="policy-section-title">Tiempos de <span>Entrega</span></h2>
+        <div class="policy-grid">
+          <div class="policy-card">
+            <div class="policy-card-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="policy-badge badge-express">Express 24h</span>
+            <h3 class="policy-card-title">CDMX Express</h3>
+            <p class="policy-card-desc">Entrega al día siguiente en toda la Ciudad de México. Disponible para pedidos realizados antes de las 2:00 PM.</p>
+          </div>
+          <div class="policy-card">
+            <div class="policy-card-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
+            <span class="policy-badge badge-standard">Estándar</span>
+            <h3 class="policy-card-title">CDMX Estándar</h3>
+            <p class="policy-card-desc">Entrega en 2 días hábiles dentro de la CDMX y zona metropolitana. Ideal si no tienes prisa.</p>
+          </div>
+          <div class="policy-card">
+            <div class="policy-card-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span class="policy-badge badge-standard">3-5 días</span>
+            <h3 class="policy-card-title">Envío Nacional</h3>
+            <p class="policy-card-desc">A cualquier estado de México en 3 a 5 días hábiles. Cobertura completa con paquetería certificada.</p>
+          </div>
+          <div class="policy-card">
+            <div class="policy-card-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span class="policy-badge badge-standard">5-7 días</span>
+            <h3 class="policy-card-title">Zonas Extendidas</h3>
+            <p class="policy-card-desc">Zonas rurales y localidades alejadas pueden requerir 5 a 7 días hábiles. Te notificamos al confirmar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Costos -->
+      <div id="ship-costs">
+        <h2 class="policy-section-title">Costos de <span>Envío</span></h2>
+        <div class="policy-note" style="margin-bottom:1.5rem"><strong>Envío gratis</strong> en compras mayores a $1,500 MXN en toda la República.</div>
+        <div class="policy-row">
+          <div class="policy-row-item">
+            <div>
+              <div class="policy-row-label">CDMX Estándar (2 días)</div>
+              <div class="policy-row-sub">Ciudad de México y zona metropolitana</div>
+            </div>
+            <div class="policy-row-value">$99 MXN</div>
+          </div>
+          <div class="policy-row-item">
+            <div>
+              <div class="policy-row-label">CDMX Express (24h)</div>
+              <div class="policy-row-sub">Pedidos antes de las 2:00 PM</div>
+            </div>
+            <div class="policy-row-value highlight">$179 MXN</div>
+          </div>
+          <div class="policy-row-item">
+            <div>
+              <div class="policy-row-label">Nacional Estándar</div>
+              <div class="policy-row-sub">3-5 días hábiles · Todo México</div>
+            </div>
+            <div class="policy-row-value">$199 - $349</div>
+          </div>
+          <div class="policy-row-item">
+            <div>
+              <div class="policy-row-label">Compras mayores a $1,500</div>
+              <div class="policy-row-sub">Envío gratuito automático</div>
+            </div>
+            <div class="policy-row-value free">GRATIS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empaque -->
+      <div id="ship-packaging">
+        <h2 class="policy-section-title">Empaque y <span>Manejo</span></h2>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Empaque profesional gratuito</strong> — Cada producto se empaca con materiales de protección de alta calidad.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Cajas reforzadas</strong> — Componentes sensibles (GPUs, monitores) se envían en cajas con doble pared y espuma interior.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Protección contra daños</strong> — Todos los paquetes incluyen seguro de transporte sin costo adicional.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Verificación pre-envío</strong> — Cada orden se inspecciona antes de salir del almacén para confirmar integridad.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paqueterías -->
+      <div id="ship-couriers">
+        <h2 class="policy-section-title">Paqueterías <span>Aliadas</span></h2>
+        <div class="policy-grid">
+          <div class="policy-card">
+            <h3 class="policy-card-title">DHL Express</h3>
+            <p class="policy-card-desc">Envíos express y nacionales. Rastreo en tiempo real y entregas puntuales. Principal para CDMX.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">FedEx</h3>
+            <p class="policy-card-desc">Cobertura nacional amplia. Ideal para envíos estándar a estados del interior.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Estafeta</h3>
+            <p class="policy-card-desc">Alternativa económica con buena cobertura. Excelente para envíos nacionales estándar.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Redpack</h3>
+            <p class="policy-card-desc">Opción adicional para zonas extendidas y entregas en localidades con acceso limitado.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rastreo -->
+      <div id="ship-tracking">
+        <h2 class="policy-section-title">Rastreo de <span>Paquetes</span></h2>
+        <div class="policy-steps">
+          <div class="policy-step">
+            <div class="policy-step-num">1</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Confirmación de pedido</div>
+              <div class="policy-step-desc">Recibes un email con tu número de orden y los detalles de tu compra.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">2</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Guía de envío</div>
+              <div class="policy-step-desc">Cuando tu paquete sale del almacén, recibes el número de guía por email y SMS.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">3</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Seguimiento en tiempo real</div>
+              <div class="policy-step-desc">Rastrea tu paquete desde la página de TECH-WHITE o directamente en la web de la paquetería.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">4</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Entrega confirmada</div>
+              <div class="policy-step-desc">Recibes notificación de entrega exitosa. Firma de recibido incluida.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incidencias -->
+      <div id="ship-incidents">
+        <h2 class="policy-section-title">Incidencias y <span>Reclamos</span></h2>
+        <div class="policy-exception-grid">
+          <div class="policy-exception">
+            <h3 class="policy-exception-title">Paquete Dañado</h3>
+            <ul>
+              <li>Toma fotos del empaque y producto</li>
+              <li>Reporta dentro de las primeras 24 horas</li>
+              <li>Envía evidencia a adri.rata@gmail.com</li>
+              <li>Reemplazo o reembolso sin costo</li>
+            </ul>
+          </div>
+          <div class="policy-exception">
+            <h3 class="policy-exception-title">Paquete Extraviado</h3>
+            <ul>
+              <li>Verifica el estatus de rastreo primero</li>
+              <li>Si no hay movimiento en 7 días, contáctanos</li>
+              <li>Investigamos con la paquetería</li>
+              <li>Reembolso total o reenvío gratuito</li>
+            </ul>
+          </div>
+        </div>
+        <div class="policy-note" style="margin-top:1.5rem">
+          <strong>Reembolsos:</strong> Se procesan en 5-7 días hábiles al mismo método de pago original. El costo de envío no es reembolsable salvo error de nuestra parte.
+        </div>
+      </div>
+
+      <!-- Contacto -->
+      <div id="ship-contact">
+        <h2 class="policy-section-title">Contacto y <span>Soporte</span></h2>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:1rem">¿Tienes dudas sobre tu envío? Contáctanos por cualquier canal.</p>
+        <div class="policy-contact-grid">
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Email</div>
+              <div class="policy-contact-value"><a href="mailto:adri.rata@gmail.com">adri.rata@gmail.com</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.59 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.72 16z"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Teléfono</div>
+              <div class="policy-contact-value"><a href="tel:5610664568">56 1066 4568</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Horario</div>
+              <div class="policy-contact-value">Lun-Vie 9am-6pm CDMX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-divider"></div>
+      <button class="btn-outline" onclick="navigate('nosotros')" style="align-self:start">VOLVER A NOSOTROS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW: CAMBIOS Y DEVOLUCIONES ══ -->
+<div class="view" id="view-devoluciones">
+  <div class="policy-hero">
+    <div class="policy-hero-bg"></div>
+    <div class="policy-hero-grid"></div>
+    <div class="policy-hero-content">
+      <p style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--cy);letter-spacing:0.3em;margin-bottom:1rem">TECH-WHITE · GARANTÍA</p>
+      <h1 class="policy-hero-title">CAMBIOS Y<br><span style="color:var(--cy)">DEVOLUCIONES</span></h1>
+    </div>
+  </div>
+
+  <div class="policy-layout">
+    <nav class="policy-toc">
+      <div class="policy-toc-title">Contenido</div>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-right').scrollIntoView({behavior:'smooth'})">Tu derecho</a>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-process').scrollIntoView({behavior:'smooth'})">Proceso</a>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-exceptions').scrollIntoView({behavior:'smooth'})">Excepciones</a>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-refund').scrollIntoView({behavior:'smooth'})">Reembolsos</a>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-warranty').scrollIntoView({behavior:'smooth'})">Garantía</a>
+      <a class="policy-toc-link" onclick="document.getElementById('dev-contact').scrollIntoView({behavior:'smooth'})">Contacto</a>
+    </nav>
+
+    <div class="policy-content">
+
+      <!-- Derecho -->
+      <div id="dev-right">
+        <h2 class="policy-section-title">Tu Derecho a <span>Devolver</span></h2>
+        <div class="policy-note" style="margin-bottom:1.5rem"><strong>15 días naturales</strong> para solicitar cambio o devolución desde la fecha de recepción.</div>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Producto sin usar</strong> — El artículo debe estar en las mismas condiciones en que lo recibiste, sin señales de uso.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Empaque original intacto</strong> — Incluye caja, manuales, accesorios y todo el contenido original.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Comprobante de compra</strong> — Número de orden TECH-WHITE o ticket de compra requerido.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Autorización previa</strong> — Debes solicitar la devolución antes de enviar el producto de vuelta.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proceso -->
+      <div id="dev-process">
+        <h2 class="policy-section-title">Proceso <span>Paso a Paso</span></h2>
+        <div class="policy-steps">
+          <div class="policy-step">
+            <div class="policy-step-num">1</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Solicita tu devolución</div>
+              <div class="policy-step-desc">Envía un email a adri.rata@gmail.com con tu número de orden y motivo de devolución. También puedes llamar al 56 1066 4568.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">2</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Obtén autorización (24-48h)</div>
+              <div class="policy-step-desc">Nuestro equipo revisa tu solicitud y te envía una autorización con instrucciones de envío.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">3</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Envía el producto</div>
+              <div class="policy-step-desc">Empaca el producto con su empaque original y envíalo por la paquetería de tu elección. El costo de envío corre por tu cuenta.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">4</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Inspección y aprobación</div>
+              <div class="policy-step-desc">Recibimos y verificamos el producto. Si cumple las condiciones, aprobamos la devolución en 2-3 días hábiles.</div>
+            </div>
+          </div>
+          <div class="policy-step">
+            <div class="policy-step-num">5</div>
+            <div class="policy-step-body">
+              <div class="policy-step-title">Reembolso o cambio</div>
+              <div class="policy-step-desc">Procesamos el reembolso en 5-7 días hábiles al mismo método de pago, o enviamos el producto de cambio.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Excepciones -->
+      <div id="dev-exceptions">
+        <h2 class="policy-section-title">Excepciones y <span>Restricciones</span></h2>
+        <div class="policy-exception-grid">
+          <div class="policy-exception">
+            <h3 class="policy-exception-title">No Aceptamos Devolución</h3>
+            <ul>
+              <li>Software y videojuegos con sello roto</li>
+              <li>Productos de higiene personal</li>
+              <li>Artículos personalizados o grabados</li>
+              <li>Gift cards y vouchers digitales</li>
+            </ul>
+          </div>
+          <div class="policy-exception">
+            <h3 class="policy-exception-title">Condiciones de Rechazo</h3>
+            <ul>
+              <li>Producto con señales de uso evidente</li>
+              <li>Empaque dañado o incompleto</li>
+              <li>Falta de comprobante de compra</li>
+              <li>Solicitud fuera del plazo de 15 días</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reembolsos -->
+      <div id="dev-refund">
+        <h2 class="policy-section-title">Reembolsos y <span>Créditos</span></h2>
+        <div class="policy-grid">
+          <div class="policy-card">
+            <h3 class="policy-card-title">Mismo Método de Pago</h3>
+            <p class="policy-card-desc">El reembolso se procesa al mismo método utilizado en la compra original. Tarjeta, OXXO o MercadoPago.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Crédito en Tienda</h3>
+            <p class="policy-card-desc">Si prefieres, puedes recibir el monto como crédito TECH-WHITE para usar en tu próxima compra sin límite de tiempo.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Tiempo de Procesamiento</h3>
+            <p class="policy-card-desc">5-7 días hábiles después de recibir y aprobar el producto devuelto. Tarjetas pueden tardar un ciclo de facturación adicional.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Costo de Envío</h3>
+            <p class="policy-card-desc">El costo de envío original no es reembolsable. El envío de retorno corre por cuenta del cliente, salvo error de nuestra parte.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Garantía -->
+      <div id="dev-warranty">
+        <h2 class="policy-section-title">Garantía de <span>Fabricante</span></h2>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Garantía del fabricante</strong> — Todos los productos incluyen la garantía oficial del fabricante. Los plazos varían según la marca.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Soporte post-venta</strong> — TECH-WHITE te asiste en el proceso de garantía con el fabricante si lo necesitas.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Defectos de fábrica</strong> — Si el producto presenta un defecto de fábrica dentro del período de garantía, el fabricante lo repara o reemplaza.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacto -->
+      <div id="dev-contact">
+        <h2 class="policy-section-title">Contacto y <span>Soporte</span></h2>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:1rem">¿Necesitas hacer una devolución o tienes dudas? Contáctanos.</p>
+        <div class="policy-contact-grid">
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Email</div>
+              <div class="policy-contact-value"><a href="mailto:adri.rata@gmail.com">adri.rata@gmail.com</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.59 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.72 16z"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Teléfono</div>
+              <div class="policy-contact-value"><a href="tel:5610664568">56 1066 4568</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Horario</div>
+              <div class="policy-contact-value">Lun-Vie 9am-6pm CDMX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-divider"></div>
+      <button class="btn-outline" onclick="navigate('nosotros')" style="align-self:start">VOLVER A NOSOTROS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW: AVISO DE PRIVACIDAD ══ -->
+<div class="view" id="view-privacidad">
+  <div class="policy-hero">
+    <div class="policy-hero-bg"></div>
+    <div class="policy-hero-grid"></div>
+    <div class="policy-hero-content">
+      <p style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--mg);letter-spacing:0.3em;margin-bottom:1rem">TECH-WHITE · LEGAL</p>
+      <h1 class="policy-hero-title">AVISO DE<br><span style="color:var(--mg)">PRIVACIDAD</span></h1>
+    </div>
+  </div>
+
+  <div class="policy-layout">
+    <nav class="policy-toc">
+      <div class="policy-toc-title">Contenido</div>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-data').scrollIntoView({behavior:'smooth'})">Datos recopilados</a>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-use').scrollIntoView({behavior:'smooth'})">Uso de datos</a>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-protection').scrollIntoView({behavior:'smooth'})">Protección</a>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-arco').scrollIntoView({behavior:'smooth'})">Derechos ARCO</a>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-cookies').scrollIntoView({behavior:'smooth'})">Cookies</a>
+      <a class="policy-toc-link" onclick="document.getElementById('priv-contact').scrollIntoView({behavior:'smooth'})">Contacto</a>
+    </nav>
+
+    <div class="policy-content">
+
+      <!-- Datos -->
+      <div id="priv-data">
+        <h2 class="policy-section-title">Datos que <span>Recopilamos</span></h2>
+        <div class="policy-grid">
+          <div class="policy-card">
+            <h3 class="policy-card-title">Datos Personales</h3>
+            <p class="policy-card-desc">Nombre completo, email, teléfono, dirección de entrega y facturación. Información necesaria para procesar tus pedidos.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Historial de Compras</h3>
+            <p class="policy-card-desc">Registro de pedidos, productos adquiridos, montos y fechas. Para seguimiento y soporte post-venta.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Datos de Navegación</h3>
+            <p class="policy-card-desc">Dirección IP, tipo de navegador, páginas visitadas y tiempo de sesión. Para mejorar la experiencia del sitio.</p>
+          </div>
+          <div class="policy-card">
+            <h3 class="policy-card-title">Datos de Pago</h3>
+            <p class="policy-card-desc">Información de pago procesada de forma segura por terceros certificados. TECH-WHITE no almacena datos de tarjeta.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uso -->
+      <div id="priv-use">
+        <h2 class="policy-section-title">Uso de tus <span>Datos</span></h2>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Procesamiento de pedidos</strong> — Usamos tu información para confirmar, empacar y enviar tus compras correctamente.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Comunicación de promociones</strong> — Enviamos ofertas y novedades solo si te suscribes. Puedes darte de baja en cualquier momento.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Mejora del servicio</strong> — Analizamos patrones de navegación para optimizar la experiencia y el catálogo de productos.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Soporte técnico</strong> — Tu historial nos permite brindarte asistencia personalizada y resolver dudas rápidamente.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>No vendemos datos a terceros</strong> — Tu información personal nunca se vende, comparte ni transfiere a empresas externas.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protección -->
+      <div id="priv-protection">
+        <h2 class="policy-section-title">Protección de <span>Datos</span></h2>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div><strong>Cifrado SSL/TLS</strong> — Todas las páginas de TECH-WHITE utilizan cifrado de transporte para proteger tus datos en tránsito.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div><strong>Acceso restringido</strong> — Solo personal autorizado tiene acceso a la información personal de los clientes.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div><strong>Retención limitada</strong> — Conservamos tus datos solo mientras sea necesario para cumplir con las finalidades descritas.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div><strong>Pagos seguros</strong> — Los datos de pago son procesados por proveedores certificados. TECH-WHITE no almacena números de tarjeta.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARCO -->
+      <div id="priv-arco">
+        <h2 class="policy-section-title">Tus Derechos <span>ARCO</span></h2>
+        <div class="policy-grid">
+          <div class="policy-card">
+            <span class="policy-badge badge-express">Acceso</span>
+            <h3 class="policy-card-title">Acceder</h3>
+            <p class="policy-card-desc">Solicita conocer qué datos personales tenemos sobre ti y cómo los utilizamos.</p>
+          </div>
+          <div class="policy-card">
+            <span class="policy-badge badge-free">Rectificación</span>
+            <h3 class="policy-card-title">Rectificar</h3>
+            <p class="policy-card-desc">Corrige datos incorrectos o desactualizados en cualquier momento desde tu cuenta.</p>
+          </div>
+          <div class="policy-card">
+            <span class="policy-badge badge-standard">Cancelación</span>
+            <h3 class="policy-card-title">Cancelar</h3>
+            <p class="policy-card-desc">Solicita la eliminación de tu cuenta y todos tus datos personales de nuestros sistemas.</p>
+          </div>
+          <div class="policy-card">
+            <span class="policy-badge badge-standard">Oposición</span>
+            <h3 class="policy-card-title">Oponerte</h3>
+            <p class="policy-card-desc">Date de baja de comunicaciones promocionales en cualquier momento con un solo clic.</p>
+          </div>
+        </div>
+        <div class="policy-note" style="margin-top:1.5rem">
+          <strong>Ejercer tus derechos:</strong> Envía tu solicitud a <strong>adri.rata@gmail.com</strong> con el asunto "Derechos ARCO". Respondemos en un máximo de 15 días hábiles.
+        </div>
+      </div>
+
+      <!-- Cookies -->
+      <div id="priv-cookies">
+        <h2 class="policy-section-title">Uso de <span>Cookies</span></h2>
+        <div class="policy-list">
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Carrito de compras</strong> — Cookies esenciales para mantener los productos en tu carrito mientras navegas.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Sesión de usuario</strong> — Mantienen tu sesión activa para que no tengas que iniciar sesión en cada página.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>Preferencias</strong> — Recuerdan tus preferencias de visualización y configuración del sitio.</div>
+          </div>
+          <div class="policy-list-item">
+            <div class="policy-list-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>No usamos cookies de rastreo publicitario</strong> — No compartimos datos de navegación con redes de publicidad externa.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacto -->
+      <div id="priv-contact">
+        <h2 class="policy-section-title">Contacto y <span>Consultas</span></h2>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:1rem">¿Tienes preguntas sobre tu privacidad? Contáctanos.</p>
+        <div class="policy-contact-grid">
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Email</div>
+              <div class="policy-contact-value"><a href="mailto:adri.rata@gmail.com">adri.rata@gmail.com</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.59 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 6 6l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.72 16z"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Teléfono</div>
+              <div class="policy-contact-value"><a href="tel:5610664568">56 1066 4568</a></div>
+            </div>
+          </div>
+          <div class="policy-contact-item">
+            <div class="policy-contact-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="policy-contact-label">Horario</div>
+              <div class="policy-contact-value">Lun-Vie 9am-6pm CDMX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-divider"></div>
+      <button class="btn-outline" onclick="navigate('nosotros')" style="align-self:start">VOLVER A NOSOTROS</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /views -->
 
 <!-- ══════════════════════════════════════
@@ -3866,9 +4778,9 @@ body.is-authed .user-btn::after {
       <h4 class="footer-col-title">Info</h4>
       <ul class="footer-links">
         <li><a onclick="navigate('nosotros')">Nosotros</a></li>
-        <li><a>Política de envíos</a></li>
-        <li><a>Devoluciones</a></li>
-        <li><a>Privacidad</a></li>
+        <li><a onclick="navigate('shipping')">Política de envíos</a></li>
+        <li><a onclick="navigate('devoluciones')">Devoluciones</a></li>
+        <li><a onclick="navigate('privacidad')">Privacidad</a></li>
       </ul>
     </div>
     <div>
@@ -4035,6 +4947,12 @@ function navigate(view, data) {
       pendingReturnTo = (data && data.returnTo) || pendingReturnTo;
     } else if (view === 'register') {
       target = document.getElementById('view-register');
+    } else if (view === 'shipping') {
+      target = document.getElementById('view-shipping');
+    } else if (view === 'devoluciones') {
+      target = document.getElementById('view-devoluciones');
+    } else if (view === 'privacidad') {
+      target = document.getElementById('view-privacidad');
     } else {
       target = document.getElementById('view-' + view);
     }
@@ -4070,13 +4988,15 @@ function productBg(cat) {
   return bgs[cat] || bgs.hardware;
 }
 
-function catIcon(cat) {
-  const icons = {
-    monitores: `<svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
-    hardware: `<svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>`,
-    perifericos: `<svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z"/><circle cx="8" cy="10" r="1.5"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="10" y1="10" x2="14" y2="10"/></svg>`,
-  };
-  return icons[cat] || icons.hardware;
+function catIcon(p) {
+  if (!p || typeof p === 'string') return `<img src="uploads/monitor.png" style="width:100%;height:100%;object-fit:cover" />`;
+  let imgName = 'monitor.png';
+  if (p.cat === 'hardware') {
+    imgName = (p.name.includes('RX ') || p.name.includes('RTX ') || p.name.includes('GeForce') || p.name.includes('Radeon') || p.name.includes('Graphics')) ? 'gpu.png' : 'cpu.png';
+  } else if (p.cat === 'perifericos') {
+    imgName = (p.name.toLowerCase().includes('teclado') || p.name.includes('Corsair') || p.name.includes('Keyboard')) ? 'keyboard.png' : (p.name.toLowerCase().includes('mouse') || p.name.includes('DeathAdder')) ? 'mouse.png' : 'headset.png';
+  }
+  return `<img src="uploads/${imgName}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;z-index:2;position:relative;transition:transform 0.4s ease, filter 0.4s ease;filter:drop-shadow(0 0 8px rgba(0,229,255,0.15));" class="prod-real-img" />`;
 }
 
 function renderProductCard(p, small = false) {
@@ -4087,7 +5007,7 @@ function renderProductCard(p, small = false) {
   <div class="product-card" onclick="navigate('product', '${p.id}')">
     <div class="product-img">
       <div class="product-img-bg" style="${productBg(p.cat)}"></div>
-      <div class="product-img-icon">${catIcon(p.cat)}</div>
+      <div class="product-img-icon" style="opacity: 1; width: 100%; height: 100%;">${catIcon(p)}</div>
       ${badgeHtml}
       <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation();toggleFav('${p.id}',this)">
         <svg width="14" height="14" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -4235,14 +5155,14 @@ function loadProductDetail(id) {
   const thumbs = [0,1,2,3].map((i,idx) =>
     `<div class="thumb ${idx === 0 ? 'active' : ''}" onclick="switchThumb(${idx}, this)">
       <div class="thumb-img-bg" style="${productBg(p.cat)};opacity:${0.5 + idx*0.1}"></div>
-      <div class="thumb-icon">${catIcon(p.cat)}</div>
+      <div class="thumb-icon" style="opacity: 1; width: 100%; height: 100%;">${catIcon(p)}</div>
     </div>`
   ).join('');
 
   document.getElementById('productDetailContent').innerHTML = `
     <div class="product-gallery" style="padding-top:0">
       <div class="main-img" id="mainImg" style="${productBg(p.cat)}">
-        <div style="opacity:0.2;position:relative;z-index:1">${catIcon(p.cat).replace('width="48"','width="80"').replace('height="48"','height="80"')}</div>
+        <div style="opacity:1;position:relative;z-index:1;width:100%;height:100%;display:flex;justify-content:center;align-items:center;">${catIcon(p)}</div>
         <div style="position:absolute;bottom:1rem;left:1rem;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:rgba(255,255,255,0.1);letter-spacing:0.1em">${p.name}</div>
       </div>
       <div class="thumb-strip">${thumbs}</div>
@@ -4392,7 +5312,7 @@ function renderCart() {
     <div class="cart-item" data-cart-id="${p.id}">
       <div class="cart-item-img">
         <div class="cart-item-img-bg" style="${productBg(p.cat)}"></div>
-        <div style="position:relative;z-index:1;opacity:0.25;display:flex">${catIcon(p.cat)}</div>
+        <div style="position:relative;z-index:1;opacity:0.9;width:100%;height:100%;display:flex">${catIcon(p)}</div>
       </div>
       <div>
         <div class="cart-item-name">${p.name}</div>
@@ -4599,7 +5519,7 @@ function bGenerate(){
     <div class="builder-result-grid">
       ${picks.map(p=>`
         <div class="builder-result-item">
-          <div class="builder-result-thumb ${p.cat}">${catIcon(p.cat)}</div>
+          <div class="builder-result-thumb ${p.cat}" style="opacity:0.9;">${catIcon(p)}</div>
           <div>
             <div class="builder-result-cat">${catLabels[p.category]}</div>
             <div class="builder-result-name">${p.name}</div>
@@ -4847,7 +5767,7 @@ function renderOrderDetail(id) {
       <div>
         <div class="cart-item-img" style="width:60px;height:60px">
           <div class="cart-item-img-bg" style="${productBg(p.cat||'hardware')}"></div>
-          <div style="position:relative;z-index:1;opacity:0.25;display:flex">${catIcon(p.cat||'hardware')}</div>
+          <div style="position:relative;z-index:1;opacity:0.9;width:100%;height:100%;display:flex">${catIcon(p)}</div>
         </div>
         <div>
           <div class="cart-item-name">${escapeHtml(p.name || it.name)}</div>
