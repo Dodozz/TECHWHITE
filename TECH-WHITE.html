@@ -277,6 +277,10 @@ body::after {
   max-width: 1280px; margin: 0 auto;
   padding: 120px 2rem 60px;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
 }
 .hero-eyebrow {
   font-family: 'Space Mono', monospace;
@@ -788,27 +792,88 @@ body::after {
 /* ══════════════════════════════════════
    HERO — PRODUCTO DESTACADO (floating card)
 ══════════════════════════════════════ */
+
+/* ── Levitation keyframe ── */
+@keyframes float-levitate {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-10px); }
+}
+/* ── Rotating glow border ── */
+@keyframes glow-rotate {
+  from { --glow-angle: 0deg; }
+  to   { --glow-angle: 360deg; }
+}
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+/* ── Shimmer scanline across image ── */
+@keyframes shimmer-scan {
+  0%   { transform: translateX(-100%) skewX(-18deg); }
+  100% { transform: translateX(250%) skewX(-18deg); }
+}
+/* ── Pulse glow for the tag ── */
+@keyframes tag-pulse {
+  0%,100% { box-shadow: 0 0 8px rgba(0,229,255,0.4); }
+  50%     { box-shadow: 0 0 18px rgba(0,229,255,0.7), 0 0 40px rgba(0,229,255,0.25); }
+}
+/* ── Staggered child entrance ── */
+@keyframes float-child-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* — Outer wrapper — */
 .hero-float-card {
-  position: absolute;
-  right: 2rem; top: 50%; transform: translateY(-50%);
+  position: relative;
   z-index: 3;
   width: 320px;
-  background: rgba(13,18,32,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0,229,255,0.25);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.45), 0 0 40px rgba(0,229,255,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  background: rgba(13,18,32,0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid transparent;
+  border-image: linear-gradient(
+    var(--glow-angle, 0deg),
+    rgba(0,229,255,0.5),
+    rgba(255,31,113,0.5),
+    rgba(0,229,255,0.5)
+  ) 1;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.5),
+    0 0 40px rgba(0,229,255,0.06),
+    0 0 80px rgba(255,31,113,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.07);
   opacity: 0;
-  animation: fade-up 0.8s ease forwards 1.4s;
+  animation:
+    fade-up 0.8s ease forwards 1.4s,
+    float-levitate 5s ease-in-out infinite 2.2s,
+    glow-rotate 6s linear infinite 2.2s;
   overflow: hidden;
+  transition: transform 0.4s cubic-bezier(.25,.46,.45,.94), box-shadow 0.4s ease;
 }
+.hero-float-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.55),
+    0 0 60px rgba(0,229,255,0.12),
+    0 0 100px rgba(255,31,113,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
 /* Corner brackets */
 .hero-float-card::before, .hero-float-card::after {
-  content: ""; position: absolute; width: 14px; height: 14px; pointer-events: none;
+  content: ""; position: absolute; width: 16px; height: 16px; pointer-events: none;
+  z-index: 5;
+  transition: width 0.3s, height 0.3s;
 }
 .hero-float-card::before { top: -1px; left: -1px; border-top: 2px solid var(--mg); border-left: 2px solid var(--mg); }
 .hero-float-card::after  { bottom: -1px; right: -1px; border-bottom: 2px solid var(--mg); border-right: 2px solid var(--mg); }
+.hero-float-card:hover::before,
+.hero-float-card:hover::after { width: 22px; height: 22px; }
 
+/* — Image area — */
 .hero-float-media {
   position: relative;
   height: 160px;
@@ -817,13 +882,7 @@ body::after {
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
-.hero-float-media svg {
-  width: 80px; height: 80px;
-  color: var(--cy);
-  opacity: 0.65;
-  position: relative; z-index: 2;
-  filter: drop-shadow(0 0 18px rgba(0,229,255,0.35));
-}
+/* Grid overlay */
 .hero-float-media::before {
   content: ""; position: absolute; inset: 0;
   background-image:
@@ -832,19 +891,51 @@ body::after {
   background-size: 20px 20px;
   z-index: 1;
 }
+/* Shimmer scanline */
+.hero-float-media::after {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  z-index: 4; pointer-events: none;
+  animation: shimmer-scan 4s ease-in-out infinite 2.5s;
+}
+.hero-float-media svg {
+  width: 80px; height: 80px;
+  color: var(--cy);
+  opacity: 0.65;
+  position: relative; z-index: 2;
+  filter: drop-shadow(0 0 18px rgba(0,229,255,0.35));
+}
 .hero-float-media-tag {
   position: absolute;
-  left: 0.75rem; top: 0.75rem; z-index: 3;
+  left: 0.75rem; top: 0.75rem; z-index: 5;
   font-family: 'Space Mono', monospace;
   font-size: 0.55rem; letter-spacing: 0.2em;
   color: #07111d;
   background: var(--cy);
   padding: 4px 8px;
   text-transform: uppercase;
-  box-shadow: 0 0 12px rgba(0,229,255,0.5);
+  animation: tag-pulse 3s ease-in-out infinite 2s;
 }
 
+/* — Body — */
 .hero-float-body { padding: 1.25rem; }
+
+/* Staggered entrance for children */
+.hero-float-badge,
+.hero-float-name,
+.hero-float-price,
+.hero-float-spec-grid,
+.hero-float-actions {
+  opacity: 0;
+  animation: float-child-in 0.5s ease forwards;
+}
+.hero-float-badge    { animation-delay: 1.7s; }
+.hero-float-name     { animation-delay: 1.85s; }
+.hero-float-price    { animation-delay: 2.0s; }
+.hero-float-spec-grid { animation-delay: 2.15s; }
+.hero-float-actions  { animation-delay: 2.3s; }
+
 .hero-float-badge {
   font-family: 'Space Mono', monospace;
   font-size: 0.6rem; letter-spacing: 0.25em;
@@ -888,6 +979,11 @@ body::after {
   font-size: 0.55rem; letter-spacing: 0.1em;
   color: var(--muted); text-transform: uppercase;
   line-height: 1.3;
+  transition: border-color 0.3s, background 0.3s;
+}
+.hero-float-spec-grid span:hover {
+  border-color: rgba(0,229,255,0.3);
+  background: rgba(0,229,255,0.04);
 }
 .hero-float-spec-grid b {
   display: block;
@@ -3131,7 +3227,8 @@ body.is-authed .user-btn::after {
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-content">
-      <p class="hero-eyebrow">Hardware Gaming · CDMX México</p>
+      <div class="hero-text-block">
+        <p class="hero-eyebrow">Hardware Gaming · CDMX México</p>
       <h1 class="hero-title">
         LLEVA TU<br>
         <span class="accent">SETUP</span><br>
@@ -3162,6 +3259,30 @@ body.is-authed .user-btn::after {
           <div class="hero-stat-label">Soporte</div>
         </div>
       </div>
+    </div> <!-- Cerrar hero-text-block -->
+
+      <!-- Floating card -->
+      <div class="hero-float-card">
+        <div class="hero-float-media">
+          <img src="uploads/hero_rtx_4060ti.png" alt="Zotac RTX 4060 Ti Gaming Graphics Card" style="object-fit: cover; width: 100%; height: 100%;" />
+          <span class="hero-float-media-tag">Drop activo</span>
+        </div>
+        <div class="hero-float-body">
+          <div class="hero-float-badge">Producto destacado</div>
+          <div class="hero-float-name">RTX 4060 Ti<br>8GB ZOTAC</div>
+          <div class="hero-float-price">$11,999 <span class="hero-float-price-old">$14,999</span></div>
+          <div class="hero-float-spec-grid">
+            <span><b>4352</b>CUDA</span>
+            <span><b>8GB</b>GDDR6</span>
+            <span><b>2535</b>MHz</span>
+          </div>
+          <div class="hero-float-actions">
+            <button class="hero-float-link" onclick="navigate('product','h1')">Ver ficha</button>
+            <button class="hero-float-add" onclick="addToCart('h1')">Agregar</button>
+          </div>
+        </div>
+      </div>
+
     </div>
     <!-- Corner brackets -->
     <div class="hero-bracket hero-bracket-tl"></div>
@@ -3172,27 +3293,6 @@ body.is-authed .user-btn::after {
     <div class="scroll-indicator">
       <span class="scroll-indicator-label">SCROLL</span>
       <div class="scroll-indicator-line"></div>
-    </div>
-    <!-- Floating card -->
-    <div class="hero-float-card">
-      <div class="hero-float-media">
-        <img src="https://placehold.co/720x460/111827/111827/png?text=%20" alt="Placeholder visual de tarjeta grafica gaming" />
-        <span class="hero-float-media-tag">Drop activo</span>
-      </div>
-      <div class="hero-float-body">
-        <div class="hero-float-badge">Producto destacado</div>
-        <div class="hero-float-name">RTX 4060 Ti<br>8GB ZOTAC</div>
-        <div class="hero-float-price">$11,999 <span class="hero-float-price-old">$14,999</span></div>
-        <div class="hero-float-spec-grid">
-          <span><b>4352</b>CUDA</span>
-          <span><b>8GB</b>GDDR6</span>
-          <span><b>2535</b>MHz</span>
-        </div>
-        <div class="hero-float-actions">
-          <button class="hero-float-link" onclick="navigate('product','h1')">Ver ficha</button>
-          <button class="hero-float-add" onclick="addToCart('h1')">Agregar</button>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -3253,7 +3353,7 @@ body.is-authed .user-btn::after {
     </div>
     <div class="featured-showcase reveal">
       <article class="featured-visual" onclick="navigate('product','h1')">
-        <img src="https://placehold.co/1100x760/111827/111827/png?text=%20" alt="Placeholder de setup gaming con componentes destacados" />
+        <img src="uploads/featured_setup.png" alt="Premium Gaming Setup con componentes destacados" style="object-fit: cover; width: 100%; height: 100%;" />
         <div class="featured-visual-content">
           <div class="featured-kicker">Hardware core</div>
           <h3 class="featured-name">RTX 4060 Ti ZOTAC</h3>
