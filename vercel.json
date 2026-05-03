@@ -1,0 +1,9 @@
+{
+  "name": "tech-prototipo",
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/TECH-WHITE.html"
+    }
+  ]
+}

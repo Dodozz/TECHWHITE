@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOID — The Creative Space</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --cream: #F5F0EB;
+  --cream-dark: #E8E0D8;
+  --black: #0A0A0A;
+  --gray: #6B6560;
+  --gray-light: #A8A29E;
+  --rust: #C2410C;
+  --rust-light: #EA580C;
+  --sage: #5B7553;
+  --white: #FEFCFA;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--black);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--rust); color: var(--white); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 4px; }
+
+/* ══ NOISE TEXTURE ══ */
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 160px 160px;
+}
+
+/* ══ CUSTOM CURSOR ══ */
+.cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--rust);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.1s ease;
+}
+.cursor-ring {
+  position: fixed;
+  width: 40px; height: 40px;
+  border: 1.5px solid rgba(194,65,12,0.3);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transition: width 0.35s ease, height 0.35s ease, border-color 0.35s ease;
+}
+
+/* ══ LOADER ══ */
+.loader {
+  position: fixed; inset: 0; z-index: 100000;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 2rem;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+.loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-word {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 100;
+  font-style: italic;
+  color: var(--black);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: loaderIn 1.2s ease forwards 0.3s;
+}
+@keyframes loaderIn {
+  from { opacity: 0; transform: translateY(40px) rotate(-2deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+.loader-line {
+  width: 80px; height: 1px;
+  background: var(--black);
+  transform-origin: left;
+  animation: loaderExpand 1.5s ease forwards 0.8s;
+}
+@keyframes loaderExpand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.5rem 3rem;
+  mix-blend-mode: difference;
+}
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+}
+.nav-index {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--white);
+  opacity: 0.6;
+}
+
+/* ══ HERO — KINETIC TYPOGRAPHY ══ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 200;
+  font-size: clamp(5rem, 16vw, 16rem);
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+.hero-title .word {
+  display: inline-block;
+  opacity: 0;
+  animation: wordReveal 1s ease forwards;
+}
+.hero-title .word:nth-child(1) { animation-delay: 1.8s; }
+.hero-title .word:nth-child(2) { animation-delay: 2s; font-style: italic; color: var(--rust); }
+@keyframes wordReveal {
+  from { opacity: 0; transform: translateY(100%) skewY(8deg); }
+  to { opacity: 1; transform: translateY(0) skewY(0deg); }
+}
+
+.hero-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-weight: 300;
+  color: var(--gray);
+  max-width: 380px;
+  margin-top: 3rem;
+  line-height: 1.8;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 2.4s;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  right: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 2.8s;
+}
+.hero-scroll-indicator span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  writing-mode: vertical-rl;
+}
+.hero-scroll-indicator .line {
+  width: 1px;
+  height: 60px;
+  background: var(--gray-light);
+  position: relative;
+  overflow: hidden;
+}
+.hero-scroll-indicator .line::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--rust);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
+
+/* Floating circle */
+.hero-circle {
+  position: absolute;
+  right: 10%;
+  top: 25%;
+  width: clamp(200px, 25vw, 350px);
+  height: clamp(200px, 25vw, 350px);
+  border: 1px solid var(--cream-dark);
+  border-radius: 50%;
+  animation: circleRotate 30s linear infinite;
+}
+.hero-circle::before {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  border: 1px solid var(--cream-dark);
+  border-radius: 50%;
+}
+.hero-circle::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--rust);
+  border-radius: 50%;
+}
+@keyframes circleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ══ MARQUEE — HORIZONTAL ══ */
+.marquee-section {
+  border-top: 1px solid var(--cream-dark);
+  border-bottom: 1px solid var(--cream-dark);
+  padding: 1.5rem 0;
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+.marquee-item {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 200;
+  font-style: italic;
+  color: var(--gray-light);
+  white-space: nowrap;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.marquee-item .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--rust);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ══ MANIFESTO — EDITORIAL LAYOUT ══ */
+.manifesto {
+  padding: 10rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 6rem;
+  align-items: start;
+}
+.manifesto-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.manifesto-label::after {
+  content: "";
+  width: 1px;
+  height: 80px;
+  background: var(--cream-dark);
+}
+.manifesto-text {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.8rem, 3.5vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.manifesto-text em {
+  font-style: italic;
+  color: var(--rust);
+}
+.manifesto-text .thin {
+  font-weight: 100;
+  color: var(--gray);
+}
+
+/* ══ HORIZONTAL SCROLL — WORKS ══ */
+.works-section {
+  padding: 6rem 0;
+  overflow: hidden;
+}
+.works-header {
+  padding: 0 3rem;
+  margin-bottom: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.works-header h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 200;
+  line-height: 1;
+}
+.works-header h2 em { font-style: italic; color: var(--rust); }
+.works-header p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  max-width: 200px;
+  text-align: right;
+  line-height: 1.8;
+}
+
+.works-scroll {
+  display: flex;
+  gap: 2rem;
+  padding: 0 3rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.works-scroll::-webkit-scrollbar { display: none; }
+
+.work-card {
+  flex: 0 0 clamp(300px, 35vw, 450px);
+  scroll-snap-align: start;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.work-card:hover { transform: translateY(-12px); }
+
+.work-card-visual {
+  aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.work-card-bg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.work-card:hover .work-card-bg { transform: scale(1.05); }
+
+.work-card-number {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--white);
+  background: rgba(10,10,10,0.6);
+  backdrop-filter: blur(10px);
+  padding: 6px 12px;
+  z-index: 2;
+}
+.work-card-year {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  font-family: 'Fraunces', serif;
+  font-size: 3rem;
+  font-weight: 100;
+  font-style: italic;
+  color: var(--white);
+  opacity: 0.3;
+  z-index: 2;
+}
+
+.work-card-body { padding: 0 0.5rem; }
+.work-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+.work-card-desc {
+  font-size: 0.82rem;
+  color: var(--gray);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.work-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.work-card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--cream-dark);
+  color: var(--gray-light);
+  transition: border-color 0.2s, color 0.2s;
+}
+.work-card:hover .work-card-tag {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+/* Visual backgrounds */
+.wv-1 {
+  background:
+    radial-gradient(ellipse 50% 50% at 40% 40%, rgba(194,65,12,0.15) 0%, transparent 60%),
+    linear-gradient(160deg, #2a2520, #1a1815);
+}
+.wv-2 {
+  background:
+    radial-gradient(ellipse 45% 45% at 60% 30%, rgba(91,117,83,0.18) 0%, transparent 55%),
+    linear-gradient(160deg, #1f2520, #151a13);
+}
+.wv-3 {
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 60%, rgba(194,65,12,0.12) 0%, transparent 50%),
+    linear-gradient(160deg, #25201a, #1a1510);
+}
+.wv-4 {
+  background:
+    radial-gradient(ellipse 40% 50% at 30% 50%, rgba(91,117,83,0.15) 0%, transparent 55%),
+    linear-gradient(160deg, #202520, #151a15);
+}
+.wv-5 {
+  background:
+    radial-gradient(ellipse 55% 45% at 70% 40%, rgba(194,65,12,0.1) 0%, transparent 50%),
+    linear-gradient(160deg, #252020, #1a1515);
+}
+
+/* ══ PHILOSOPHY — ASYMMETRIC GRID ══ */
+.philosophy {
+  padding: 10rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.philosophy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 6rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.philosophy-header h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 200;
+  line-height: 0.95;
+}
+.philosophy-header h2 em { font-style: italic; color: var(--rust); }
+.philosophy-header p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  max-width: 250px;
+  text-align: right;
+  line-height: 1.8;
+}
+
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+.philosophy-card {
+  padding: 2.5rem;
+  border: 1px solid var(--cream-dark);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.4s ease;
+}
+.philosophy-card:hover { border-color: var(--rust); }
+.philosophy-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--rust);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+.philosophy-card:hover::before { transform: scaleX(1); }
+
+.philosophy-card:nth-child(1) { grid-column: 1 / 2; grid-row: 1 / 2; }
+.philosophy-card:nth-child(2) { grid-column: 2 / 4; grid-row: 1 / 2; }
+.philosophy-card:nth-child(3) { grid-column: 1 / 3; grid-row: 2 / 3; }
+.philosophy-card:nth-child(4) { grid-column: 3 / 4; grid-row: 2 / 3; }
+
+.philosophy-card-num {
+  font-family: 'Fraunces', serif;
+  font-size: 4rem;
+  font-weight: 100;
+  font-style: italic;
+  color: var(--cream-dark);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.philosophy-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+}
+.philosophy-card-text {
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.7;
+}
+
+/* ══ BIG QUOTE ══ */
+.quote-section {
+  padding: 8rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.quote-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 40% 50% at 50% 50%, rgba(194,65,12,0.06) 0%, transparent 60%);
+}
+.quote-text {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 200;
+  font-style: italic;
+  line-height: 1.2;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.quote-text span { color: var(--rust); }
+.quote-attr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-top: 2.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ══ PROCESS — VERTICAL TIMELINE ══ */
+.process {
+  padding: 10rem 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.process h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 200;
+  margin-bottom: 6rem;
+}
+.process h2 em { font-style: italic; color: var(--rust); }
+
+.process-timeline {
+  position: relative;
+  padding-left: 4rem;
+}
+.process-timeline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--cream-dark);
+}
+.process-step {
+  position: relative;
+  padding-bottom: 5rem;
+}
+.process-step:last-child { padding-bottom: 0; }
+.process-step::before {
+  content: "";
+  position: absolute;
+  left: -4rem;
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+  background: var(--cream-dark);
+  border-radius: 50%;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.process-step:hover::before {
+  background: var(--rust);
+  transform: scale(1.5);
+}
+.process-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.process-step-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin-bottom: 0.75rem;
+}
+.process-step-text {
+  font-size: 0.9rem;
+  color: var(--gray);
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+/* ══ CONTACT — EDITORIAL ══ */
+.contact {
+  padding: 8rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 6rem;
+  align-items: start;
+}
+.contact-left h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 200;
+  line-height: 1;
+  margin-bottom: 2rem;
+}
+.contact-left h2 em { font-style: italic; color: var(--rust); }
+.contact-left p {
+  font-size: 0.95rem;
+  color: var(--gray);
+  line-height: 1.8;
+  max-width: 450px;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 3rem;
+}
+.contact-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--cream-dark);
+  text-decoration: none;
+  color: var(--black);
+  transition: padding-left 0.3s ease, border-color 0.3s ease;
+}
+.contact-link:first-child { border-top: 1px solid var(--cream-dark); }
+.contact-link:hover {
+  padding-left: 1.5rem;
+  border-color: var(--rust);
+}
+.contact-link-label {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+.contact-link-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--gray-light);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.contact-link:hover .contact-link-arrow {
+  color: var(--rust);
+  transform: translateX(4px);
+}
+
+.contact-right {
+  padding-top: 2rem;
+}
+.contact-stat {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--cream-dark);
+}
+.contact-stat:first-child { border-top: 1px solid var(--cream-dark); }
+.contact-stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 3rem;
+  font-weight: 100;
+  font-style: italic;
+  color: var(--rust);
+  line-height: 1;
+}
+.contact-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-top: 0.5rem;
+}
+
+/* ══ FOOTER ══ */
+footer {
+  border-top: 1px solid var(--cream-dark);
+  padding: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-copy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+}
+.footer-copy span { color: var(--rust); }
+.footer-back {
+  font-family: 'Fraunces', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.footer-back:hover { color: var(--rust); }
+
+/* ══ SCROLL REVEAL ══ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-1 { transition-delay: 0.1s; }
+.reveal-2 { transition-delay: 0.2s; }
+.reveal-3 { transition-delay: 0.3s; }
+.reveal-4 { transition-delay: 0.4s; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1024px) {
+  .manifesto-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .manifesto-label { position: static; }
+  .philosophy-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .philosophy-card:nth-child(1) { grid-column: 1 / 2; grid-row: auto; }
+  .philosophy-card:nth-child(2) { grid-column: 2 / 3; grid-row: auto; }
+  .philosophy-card:nth-child(3) { grid-column: 1 / 3; grid-row: auto; }
+  .philosophy-card:nth-child(4) { grid-column: 1 / 3; grid-row: auto; }
+  .contact-grid { grid-template-columns: 1fr; gap: 4rem; }
+  .hero-circle { display: none; }
+}
+@media (max-width: 768px) {
+  .nav { padding: 1rem 1.5rem; }
+  .hero { padding: 0 1.5rem; }
+  .manifesto { padding: 6rem 1.5rem; }
+  .works-header { padding: 0 1.5rem; flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .works-header p { text-align: left; }
+  .works-scroll { padding: 0 1.5rem; }
+  .philosophy { padding: 6rem 1.5rem; }
+  .philosophy-grid { grid-template-columns: 1fr; }
+  .philosophy-card:nth-child(3),
+  .philosophy-card:nth-child(4) { grid-column: auto; }
+  .process { padding: 6rem 1.5rem; }
+  .contact { padding: 6rem 1.5rem; }
+  .quote-section { padding: 6rem 1.5rem; }
+  footer { padding: 2rem 1.5rem; }
+  .cursor-dot, .cursor-ring { display: none; }
+  .hero-scroll-indicator { display: none; }
+}
+@media (max-width: 480px) {
+  .hero-title { font-size: clamp(3.5rem, 18vw, 6rem); }
+  .manifesto-text { font-size: 1.5rem; }
+  .philosophy-card { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+  <div class="loader-word">Void</div>
+  <div class="loader-line"></div>
+</div>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a class="nav-logo" href="#">VOID</a>
+  <div class="nav-index">004 — EXPERIMENTAL</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-circle"></div>
+  <h1 class="hero-title">
+    <span class="word">Into</span>
+    <span class="word">Void</span>
+  </h1>
+  <p class="hero-subtitle">
+    The space between ideas and execution. Where code becomes art, and art becomes experience. Welcome to the creative laboratory.
+  </p>
+  <div class="hero-scroll-indicator">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">Design <span class="dot"></span> Code <span class="dot"></span> Create <span class="dot"></span> Iterate <span class="dot"></span> Disrupt <span class="dot"></span> Feel <span class="dot"></span> Build <span class="dot"></span></span>
+    <span class="marquee-item">Design <span class="dot"></span> Code <span class="dot"></span> Create <span class="dot"></span> Iterate <span class="dot"></span> Disrupt <span class="dot"></span> Feel <span class="dot"></span> Build <span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- Manifesto -->
+<section class="manifesto">
+  <div class="manifesto-grid">
+    <div class="manifesto-label reveal">Manifesto — 2025</div>
+    <div class="manifesto-text reveal reveal-1">
+      We believe that <em>code is a medium</em>, not a constraint. That the best interfaces feel <em>inevitable</em> — like they always existed, waiting to be discovered. We don't follow trends. We chase <span class="thin">the feeling of something that makes you stop scrolling and just... look.</span>
+    </div>
+  </div>
+</section>
+
+<!-- Works -->
+<section class="works-section">
+  <div class="works-header">
+    <h2 class="reveal">Selected <em>works</em></h2>
+    <p class="reveal reveal-1">A curated collection of experiments, builds, and creative explorations.</p>
+  </div>
+  <div class="works-scroll">
+    <div class="work-card">
+      <div class="work-card-visual">
+        <div class="work-card-bg wv-1"></div>
+        <div class="work-card-number">01</div>
+        <div class="work-card-year">25</div>
+      </div>
+      <div class="work-card-body">
+        <h3 class="work-card-title">TECH-WHITE</h3>
+        <p class="work-card-desc">Cyberpunk e-commerce for gaming hardware. Full build with AI-powered setup builder.</p>
+        <div class="work-card-tags">
+          <span class="work-card-tag">E-Commerce</span>
+          <span class="work-card-tag">AI</span>
+          <span class="work-card-tag">Dark UI</span>
+        </div>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-card-visual">
+        <div class="work-card-bg wv-2"></div>
+        <div class="work-card-number">02</div>
+        <div class="work-card-year">25</div>
+      </div>
+      <div class="work-card-body">
+        <h3 class="work-card-title">Portfolio</h3>
+        <p class="work-card-desc">Dark gradient portfolio with custom cursor and scroll-driven animations.</p>
+        <div class="work-card-tags">
+          <span class="work-card-tag">Portfolio</span>
+          <span class="work-card-tag">Motion</span>
+          <span class="work-card-tag">Gradient</span>
+        </div>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-card-visual">
+        <div class="work-card-bg wv-3"></div>
+        <div class="work-card-number">03</div>
+        <div class="work-card-year">25</div>
+      </div>
+      <div class="work-card-body">
+        <h3 class="work-card-title">Void</h3>
+        <p class="work-card-desc">This page. An editorial light-themed experiment in creative web design.</p>
+        <div class="work-card-tags">
+          <span class="work-card-tag">Editorial</span>
+          <span class="work-card-tag">Light</span>
+          <span class="work-card-tag">Experimental</span>
+        </div>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-card-visual">
+        <div class="work-card-bg wv-4"></div>
+        <div class="work-card-number">04</div>
+        <div class="work-card-year">24</div>
+      </div>
+      <div class="work-card-body">
+        <h3 class="work-card-title">Prompt Engine</h3>
+        <p class="work-card-desc">AI-powered tool converting natural language into structured development specs.</p>
+        <div class="work-card-tags">
+          <span class="work-card-tag">AI</span>
+          <span class="work-card-tag">Python</span>
+          <span class="work-card-tag">LLM</span>
+        </div>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-card-visual">
+        <div class="work-card-bg wv-5"></div>
+        <div class="work-card-number">05</div>
+        <div class="work-card-year">24</div>
+      </div>
+      <div class="work-card-body">
+        <h3 class="work-card-title">Analytics Dashboard</h3>
+        <p class="work-card-desc">Real-time data visualization with dark-mode-first design philosophy.</p>
+        <div class="work-card-tags">
+          <span class="work-card-tag">Dashboard</span>
+          <span class="work-card-tag">D3.js</span>
+          <span class="work-card-tag">Data</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Philosophy -->
+<section class="philosophy">
+  <div class="philosophy-header">
+    <h2 class="reveal">How I <em>think</em></h2>
+    <p class="reveal reveal-1">The principles that guide every build, every line of code, every pixel placed.</p>
+  </div>
+  <div class="philosophy-grid">
+    <div class="philosophy-card reveal reveal-1">
+      <div class="philosophy-card-num">01</div>
+      <h3 class="philosophy-card-title">Feeling First</h3>
+      <p class="philosophy-card-text">Every project starts with a feeling, not a wireframe. What should the user experience? What emotion should they carry?</p>
+    </div>
+    <div class="philosophy-card reveal reveal-2">
+      <div class="philosophy-card-num">02</div>
+      <h3 class="philosophy-card-title">Code as Craft</h3>
+      <p class="philosophy-card-text">Clean code isn't just functional — it's beautiful. Architecture matters. Naming matters. The details nobody sees are the ones that matter most.</p>
+    </div>
+    <div class="philosophy-card reveal reveal-3">
+      <div class="philosophy-card-num">03</div>
+      <h3 class="philosophy-card-title">AI as Collaborator</h3>
+      <p class="philosophy-card-text">I don't compete with AI. I dance with it. The best work comes from the intersection of human intuition and machine capability.</p>
+    </div>
+    <div class="philosophy-card reveal reveal-4">
+      <div class="philosophy-card-num">04</div>
+      <h3 class="philosophy-card-title">Never Generic</h3>
+      <p class="philosophy-card-text">If it looks like everything else, it's wrong. Every project needs a point of view, a personality, a reason to exist.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Quote -->
+<div class="quote-section">
+  <blockquote class="quote-text reveal">
+    "The best code is the code that makes you <span>feel something</span>."
+  </blockquote>
+  <div class="quote-attr reveal reveal-1">— Dodoz, somewhere between coffee commits</div>
+</div>
+
+<!-- Process -->
+<section class="process">
+  <h2 class="reveal">The <em>process</em></h2>
+  <div class="process-timeline">
+    <div class="process-step reveal">
+      <div class="process-step-num">Step 01</div>
+      <h3 class="process-step-title">Listen &amp; Absorb</h3>
+      <p class="process-step-text">Every project begins with deep understanding. What's the context? Who's the audience? What's the vibe? I immerse myself in the problem before touching a single line of code.</p>
+    </div>
+    <div class="process-step reveal reveal-1">
+      <div class="process-step-num">Step 02</div>
+      <h3 class="process-step-title">Dream in Wireframes</h3>
+      <p class="process-step-text">Mental prototyping. I sketch layouts in my head, explore color palettes, test typography combinations. The best designs are born from iteration before implementation.</p>
+    </div>
+    <div class="process-step reveal reveal-2">
+      <div class="process-step-num">Step 03</div>
+      <h3 class="process-step-title">Vibe Code</h3>
+      <p class="process-step-text">AI-assisted, human-directed. I use tools to accelerate, but the creative decisions are always mine. The code flows when the vision is clear.</p>
+    </div>
+    <div class="process-step reveal reveal-3">
+      <div class="process-step-num">Step 04</div>
+      <h3 class="process-step-title">Refine Until It Hurts</h3>
+      <p class="process-step-text">The last 10% takes 90% of the time. Spacing, timing, easing, contrast. I polish until every interaction feels inevitable.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact">
+  <div class="contact-grid">
+    <div class="contact-left reveal">
+      <h2>Let's create <em>together</em></h2>
+      <p>Always open to interesting collaborations, experimental projects, or just a good conversation about the future of creative technology.</p>
+      <div class="contact-links">
+        <a href="mailto:dodoz@email.com" class="contact-link">
+          <span class="contact-link-label">Email</span>
+          <span class="contact-link-arrow">→</span>
+        </a>
+        <a href="#" class="contact-link">
+          <span class="contact-link-label">Twitter / X</span>
+          <span class="contact-link-arrow">→</span>
+        </a>
+        <a href="#" class="contact-link">
+          <span class="contact-link-label">GitHub</span>
+          <span class="contact-link-arrow">→</span>
+        </a>
+        <a href="#" class="contact-link">
+          <span class="contact-link-label">LinkedIn</span>
+          <span class="contact-link-arrow">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-right reveal reveal-2">
+      <div class="contact-stat">
+        <div class="contact-stat-num">20+</div>
+        <div class="contact-stat-label">Projects shipped</div>
+      </div>
+      <div class="contact-stat">
+        <div class="contact-stat-num">∞</div>
+        <div class="contact-stat-label">Ideas in queue</div>
+      </div>
+      <div class="contact-stat">
+        <div class="contact-stat-num">24/7</div>
+        <div class="contact-stat-label">Vibe availability</div>
+      </div>
+      <div class="contact-stat">
+        <div class="contact-stat-num">0</div>
+        <div class="contact-stat-label">Generic designs made</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-copy">© 2025 <span>VOID</span> — All rights reserved</div>
+  <a href="PORTFOLIO.html" class="footer-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to Portfolio
+  </a>
+</footer>
+
+<script>
+// Loader
+setTimeout(() => {
+  document.getElementById('loader').classList.add('done');
+}, 2800);
+
+// Custom cursor
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx - 4 + 'px';
+  dot.style.top = my - 4 + 'px';
+});
+
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx - 20 + 'px';
+  ring.style.top = ry - 20 + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a, .work-card, .philosophy-card, .contact-link').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width = '56px';
+    ring.style.height = '56px';
+    ring.style.borderColor = 'rgba(194,65,12,0.5)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width = '40px';
+    ring.style.height = '40px';
+    ring.style.borderColor = 'rgba(194,65,12,0.3)';
+  });
+});
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+reveals.forEach(el => observer.observe(el));
+
+// Horizontal scroll with mouse wheel
+const worksScroll = document.querySelector('.works-scroll');
+if (worksScroll) {
+  worksScroll.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      worksScroll.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+}
+
+// Parallax on hero circle
+const heroCircle = document.querySelector('.hero-circle');
+if (heroCircle) {
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    heroCircle.style.transform = `rotate(${scrollY * 0.05}deg) translateY(${scrollY * 0.1}px)`;
+  });
+}
+</script>
+</body>
+</html>
