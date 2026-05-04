@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TECH-WHITE — Lleva tu Setup al siguiente nivel</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
@@ -556,7 +557,7 @@ body::after {
   background:
     radial-gradient(ellipse 80% 60% at 60% 30%, rgba(0,229,255,0.15) 0%, transparent 60%),
     radial-gradient(ellipse 60% 80% at 30% 70%, rgba(255,31,113,0.12) 0%, transparent 50%),
-    url('uploads/cat_monitores.png') center/cover no-repeat;
+    url('uploads/cat_monitores.jpg') center/cover no-repeat;
 }
 .cat-bg-2 {
   background:
@@ -641,6 +642,20 @@ body::after {
 }
 .fav-btn:hover { border-color: var(--mg); color: var(--mg); }
 .fav-btn.active { color: var(--mg); border-color: var(--mg); background: rgba(255,31,113,0.1); }
+
+.cmp-btn {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  background: rgba(7,11,20,0.6);
+  border: 1px solid var(--border);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  color: var(--muted);
+}
+.cmp-btn:hover { border-color: var(--cy); color: var(--cy); }
+.cmp-btn.active { color: var(--cy); border-color: var(--cy); background: rgba(0,229,255,0.1); }
 
 .product-body {
   padding: 1rem;
@@ -2164,6 +2179,7 @@ footer {
   .products-grid-featured { grid-template-columns: 1fr; }
   .offer-side { align-items: stretch; }
   .btn-offer, .offer-stat { width: 100%; }
+  .fav-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: 1fr; }
@@ -2176,6 +2192,9 @@ footer {
   .featured-name { max-width: 10ch; }
   .featured-cta-row { flex-direction: column; }
   .featured-cta-row .btn-primary, .featured-cta-row .btn-outline { width: 100%; justify-content: center; }
+  .fav-grid { grid-template-columns: 1fr; }
+  .fav-header { padding-left: 1rem; padding-right: 1rem; }
+  .fav-layout { padding: 1rem; }
 }
 
 /* ══════════════════════════════════════
@@ -3080,6 +3099,78 @@ body.is-authed .user-btn::after {
   color: var(--cy); margin-bottom: 0.75rem;
 }
 
+/* ══════════════════════════════════════
+   FAVORITES VIEW
+══════════════════════════════════════ */
+.fav-header {
+  padding-top: calc(64px + 3rem);
+  padding-bottom: 2rem;
+  padding-left: 2rem; padding-right: 2rem;
+  border-bottom: 1px solid var(--border);
+  max-width: 1280px; margin: 0 auto;
+}
+.fav-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1;
+  margin-top: 0.5rem;
+}
+.fav-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem; color: var(--muted);
+  margin-top: 0.5rem;
+}
+.fav-layout {
+  max-width: 1280px; margin: 0 auto;
+  padding: 2rem;
+  min-height: 50vh;
+}
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+.fav-empty {
+  text-align: center; padding: 5rem 2rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.fav-empty-icon { opacity: 0.12; }
+.fav-empty-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem; color: var(--muted);
+}
+.fav-empty-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+
+/* Favorites nav button — distinct from cart */
+.fav-btn-nav {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); position: relative;
+  padding: 6px; display: flex; align-items: center;
+  transition: color 0.3s, filter 0.3s;
+}
+.fav-btn-nav:hover { color: var(--txt); }
+.fav-btn-nav.has-favs { color: var(--mg); }
+.fav-btn-nav.has-favs .fav-heart-icon {
+  fill: var(--mg);
+  filter: drop-shadow(0 0 6px rgba(255,31,113,0.35));
+}
+
+/* Subtle dot indicator — no number badge */
+.fav-dot {
+  position: absolute; top: 2px; right: 2px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--mg);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 6px rgba(255,31,113,0.5);
+}
+.fav-dot.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .account-layout { grid-template-columns: 1fr; }
@@ -3368,6 +3459,630 @@ body.is-authed .user-btn::after {
   .order-row .order-link { grid-column: 1 / -1; justify-self: start; }
   .address-form { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════════════════════════
+   COMPARAR VIEW
+══════════════════════════════════════ */
+.compare-wrap {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 7rem 2rem 5rem;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: compare-fade-in 0.8s cubic-bezier(0.32,0.72,0,1) 0.1s forwards;
+}
+@keyframes compare-fade-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+.compare-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.compare-eyebrow {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cy);
+  padding: 4px 12px;
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 20px;
+  margin-bottom: 1.25rem;
+  background: rgba(0,229,255,0.06);
+}
+.compare-header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+  line-height: 1;
+}
+.compare-header h1 span { color: var(--mg); }
+.compare-subtitle {
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Empty state */
+.compare-empty {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+.compare-empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  background: rgba(255,31,113,0.08);
+  border: 1px solid rgba(255,31,113,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mg);
+}
+.compare-empty h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.compare-empty p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Max message */
+.compare-max-msg {
+  text-align: center;
+  color: var(--mg);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 0.6rem 1.2rem;
+  background: rgba(255,31,113,0.08);
+  border: 1px solid rgba(255,31,113,0.2);
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  display: inline-block;
+}
+.compare-max-wrap { text-align: center; }
+
+/* Grid */
+.compare-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.compare-grid.has-1 { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto 3rem; }
+.compare-grid.has-2 { grid-template-columns: repeat(2, 1fr); }
+.compare-grid.has-3 { grid-template-columns: repeat(3, 1fr); }
+.compare-grid.has-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Doppelrand compare card */
+.compare-card-shell {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 1.5rem;
+  padding: 0.25rem;
+  transition: border-color 0.5s cubic-bezier(0.32,0.72,0,1), box-shadow 0.5s cubic-bezier(0.32,0.72,0,1);
+  animation: card-reveal 0.6s cubic-bezier(0.32,0.72,0,1) both;
+}
+.compare-card-shell:nth-child(1) { animation-delay: 0.1s; }
+.compare-card-shell:nth-child(2) { animation-delay: 0.2s; }
+.compare-card-shell:nth-child(3) { animation-delay: 0.3s; }
+.compare-card-shell:nth-child(4) { animation-delay: 0.4s; }
+@keyframes card-reveal {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.compare-card-shell:hover {
+  border-color: rgba(255,31,113,0.3);
+  box-shadow: 0 8px 40px rgba(255,31,113,0.12);
+}
+.compare-card {
+  background: var(--surface);
+  border-radius: calc(1.5rem - 0.25rem);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.06);
+  overflow: hidden;
+  position: relative;
+}
+.compare-card-img {
+  aspect-ratio: 16/10;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,229,255,0.08) 0%, transparent 70%);
+}
+.compare-card-img .prod-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 16px rgba(0,229,255,0.2));
+  transition: transform 0.6s cubic-bezier(0.32,0.72,0,1);
+}
+.compare-card-shell:hover .prod-real-img { transform: scale(1.06); }
+.compare-remove-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(7,11,20,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.3s cubic-bezier(0.32,0.72,0,1);
+  z-index: 5;
+}
+.compare-remove-btn:hover {
+  border-color: var(--mg);
+  color: var(--mg);
+  background: rgba(255,31,113,0.15);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.compare-card-body { padding: 1.25rem 1.5rem 1.5rem; }
+.compare-card-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: var(--cy);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.compare-card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  line-height: 1.35;
+  color: var(--txt);
+}
+.compare-card-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.compare-card-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.02em;
+  color: var(--txt);
+  line-height: 1;
+}
+.compare-card-price-orig {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.compare-card-badge {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+/* Comparison table */
+.compare-table-section {
+  margin-top: 1rem;
+  animation: table-reveal 0.7s cubic-bezier(0.32,0.72,0,1) 0.3s both;
+}
+@keyframes table-reveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.compare-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.compare-table-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+}
+.compare-table-title span { color: var(--cy); }
+.compare-table-wrap {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.01);
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+.compare-table thead th {
+  background: rgba(0,0,0,0.3);
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.compare-table thead th:first-child {
+  border-radius: 0;
+  padding-left: 1.5rem;
+}
+.compare-table tbody tr {
+  transition: background 0.2s ease;
+}
+.compare-table tbody tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+.compare-table td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(26,35,64,0.4);
+  vertical-align: middle;
+  color: var(--muted);
+}
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-table td:first-child {
+  font-weight: 600;
+  color: var(--txt);
+  white-space: nowrap;
+  width: 28%;
+  padding-left: 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+}
+.compare-table .compare-highlight {
+  color: var(--cy);
+  font-weight: 700;
+}
+.compare-best-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.55rem;
+  padding: 2px 7px;
+  background: rgba(0,229,255,0.12);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  color: var(--cy);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Actions */
+.compare-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+  animation: actions-reveal 0.6s cubic-bezier(0.32,0.72,0,1) 0.5s both;
+}
+@keyframes actions-reveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.compare-clear-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.85rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.32,0.72,0,1);
+}
+.compare-clear-btn:hover {
+  border-color: var(--mg);
+  color: var(--mg);
+  background: rgba(255,31,113,0.06);
+}
+
+/* Hint */
+.compare-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 1.5rem;
+  letter-spacing: 0.05em;
+}
+.compare-hint strong { color: var(--mg); }
+
+@media (max-width: 1024px) {
+  .compare-grid.has-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .compare-wrap { padding: 5.5rem 1rem 3rem; }
+  .compare-grid.has-2,
+  .compare-grid.has-3,
+  .compare-grid.has-4 { grid-template-columns: 1fr; }
+  .compare-table { font-size: 0.78rem; }
+  .compare-table td, .compare-table th { padding: 0.7rem 0.8rem; }
+}
+.compare-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.compare-header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.compare-header h1 span { color: var(--mg); }
+.compare-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.compare-selected-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.compare-selected-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+.compare-selected-item button {
+  background: none;
+  border: none;
+  color: var(--mg);
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+.compare-empty-msg {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--muted);
+}
+.compare-empty-msg p { margin-bottom: 1.5rem; font-size: 1.1rem; }
+.compare-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.compare-grid.has-1 { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto 2rem; }
+.compare-grid.has-2 { grid-template-columns: repeat(2, 1fr); }
+.compare-grid.has-3 { grid-template-columns: repeat(3, 1fr); }
+.compare-grid.has-4 { grid-template-columns: repeat(4, 1fr); }
+
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.compare-card:hover {
+  border-color: var(--mg);
+  box-shadow: 0 0 24px rgba(255,31,113,0.18);
+  transform: translateY(-2px);
+}
+.compare-card-img {
+  aspect-ratio: 16/10;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.compare-card-img .prod-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 12px rgba(0,229,255,0.2));
+  transition: transform 0.4s ease;
+}
+.compare-card:hover .prod-real-img { transform: scale(1.05); }
+.compare-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(7,11,20,0.8);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  transition: border-color 0.2s, color 0.2s;
+  z-index: 5;
+}
+.compare-remove-btn:hover { border-color: var(--mg); color: var(--mg); }
+
+.compare-card-body { padding: 1.25rem; }
+.compare-card-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--cy);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.compare-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.compare-card-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+  color: var(--txt);
+  margin-bottom: 0.25rem;
+}
+.compare-card-price-orig {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: line-through;
+  margin-left: 0.5rem;
+}
+.compare-card-badge {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+.compare-table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+.compare-table th {
+  background: var(--bg);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+.compare-table td {
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(26,35,64,0.5);
+  vertical-align: top;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table td:first-child {
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  width: 30%;
+}
+.compare-table .compare-highlight {
+  color: var(--cy);
+  font-weight: 700;
+}
+.compare-table .compare-best-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  background: rgba(0,229,255,0.15);
+  border-radius: 3px;
+  margin-left: 0.5rem;
+}
+.compare-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.compare-actions .btn-add {
+  padding: 0.75rem 2rem;
+  font-size: 0.85rem;
+}
+.compare-clear-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color 0.2s, color 0.2s;
+}
+.compare-clear-btn:hover { border-color: var(--mg); color: var(--mg); }
+.compare-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+.compare-max-msg {
+  text-align: center;
+  color: var(--mg);
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  background: rgba(255,31,113,0.1);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+@media (max-width: 1024px) {
+  .compare-grid.has-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .compare-wrap { padding: 5rem 1rem 3rem; }
+  .compare-grid.has-2,
+  .compare-grid.has-3,
+  .compare-grid.has-4 { grid-template-columns: 1fr; }
+  .compare-table { font-size: 0.8rem; }
+}
 </style>
 </head>
 <body>
@@ -3397,6 +4112,10 @@ body.is-authed .user-btn::after {
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       <span class="cart-badge" id="cartBadge">0</span>
     </button>
+    <button class="fav-btn-nav" onclick="navigate('favoritos')" aria-label="Favoritos">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fav-heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="fav-dot" id="favDot"></span>
+    </button>
     <button class="user-btn" onclick="userBtnClick()" aria-label="Mi cuenta">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </button>
@@ -3413,6 +4132,7 @@ body.is-authed .user-btn::after {
   <a onclick="navigate('home');toggleMobile()">Inicio</a>
   <a onclick="navigate('catalogo');toggleMobile()">Catálogo</a>
   <a onclick="navigate('ofertas');toggleMobile()">Ofertas</a>
+  <a onclick="navigate('favoritos');toggleMobile()">Favoritos</a>
   <a onclick="navigate('nosotros');toggleMobile()">Nosotros</a>
   <a onclick="userBtnClick();toggleMobile()">Mi cuenta</a>
   <a onclick="openBuilder();toggleMobile()" style="color:var(--cy)">Setup Builder</a>
@@ -3860,6 +4580,28 @@ body.is-authed .user-btn::after {
   </div>
 </div>
 
+<!-- ══ VIEW: FAVORITOS ══ -->
+<div class="view" id="view-favoritos">
+  <div class="fav-header">
+    <div class="breadcrumb">
+      <span onclick="navigate('home')">INICIO</span>
+      <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      <span style="color:var(--txt)">FAVORITOS</span>
+    </div>
+    <h1 class="fav-title">Tus <span style="color:var(--mg)">Favoritos</span></h1>
+    <p class="fav-count" id="favCount">0 productos guardados</p>
+  </div>
+  <div class="fav-layout">
+    <div class="fav-grid" id="favGrid"></div>
+    <div class="fav-empty" id="favEmpty" style="display:none">
+      <svg class="fav-empty-icon" width="80" height="80" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div class="fav-empty-title">Sin favoritos aún</div>
+      <p class="fav-empty-sub">Explora el catálogo y guarda los productos que más te gusten.</p>
+      <button class="btn-primary" onclick="navigate('catalogo')">EXPLORAR CATÁLOGO</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ VIEW: NOSOTROS ══ -->
 <div class="view" id="view-nosotros">
   <div class="about-hero">
@@ -4104,6 +4846,17 @@ body.is-authed .user-btn::after {
       <span id="trackBc" style="color:var(--txt)">—</span>
     </div>
     <div id="trackContent"></div>
+  </div>
+</div>
+
+<!-- ══ VIEW: COMPARAR ══ -->
+<div class="view" id="view-comparar">
+  <div class="compare-wrap">
+    <div class="compare-header">
+      <h1>COMPARA TU <span>SETUP</span></h1>
+      <p class="compare-subtitle">Analiza especificaciones y encuentra el producto ideal</p>
+    </div>
+    <div id="compareContent"></div>
   </div>
 </div>
 
@@ -4771,6 +5524,7 @@ body.is-authed .user-btn::after {
         <li><a onclick="navigate('home')">Inicio</a></li>
         <li><a onclick="navigate('catalogo')">Catálogo</a></li>
         <li><a onclick="navigate('ofertas')">Ofertas</a></li>
+        <li><a onclick="navigate('favoritos')">Favoritos</a></li>
         <li><a onclick="navigate('carrito')">Carrito</a></li>
       </ul>
     </div>
@@ -4923,6 +5677,9 @@ function navigate(view, data) {
     } else if (view === 'carrito') {
       target = document.getElementById('view-carrito');
       renderCart();
+    } else if (view === 'favoritos') {
+      target = document.getElementById('view-favoritos');
+      renderFavorites();
     } else if (view === 'cuenta') {
       if (!requireAuth('cuenta')) return;
       target = document.getElementById('view-cuenta');
@@ -4953,6 +5710,9 @@ function navigate(view, data) {
       target = document.getElementById('view-devoluciones');
     } else if (view === 'privacidad') {
       target = document.getElementById('view-privacidad');
+    } else if (view === 'comparar') {
+      target = document.getElementById('view-comparar');
+      renderCompare();
     } else {
       target = document.getElementById('view-' + view);
     }
@@ -4989,8 +5749,8 @@ function productBg(cat) {
 }
 
 function catIcon(p) {
-  if (!p || typeof p === 'string') return `<img src="uploads/monitor.png" style="width:100%;height:100%;object-fit:cover" />`;
-  let imgName = 'monitor.png';
+  if (!p || typeof p === 'string') return `<img src="uploads/monitor.jpg" style="width:100%;height:100%;object-fit:cover" />`;
+  let imgName = 'monitor.jpg';
   if (p.cat === 'hardware') {
     imgName = (p.name.includes('RX ') || p.name.includes('RTX ') || p.name.includes('GeForce') || p.name.includes('Radeon') || p.name.includes('Graphics')) ? 'gpu.png' : 'cpu.png';
   } else if (p.cat === 'perifericos') {
@@ -5001,6 +5761,7 @@ function catIcon(p) {
 
 function renderProductCard(p, small = false) {
   const isFav = favorites.includes(p.id);
+  const isCmp = compareList.includes(p.id);
   const badgeHtml = p.badge ? `<div class="product-badge ${p.badge === 'NUEVO' ? 'badge-new' : 'badge-sale'}">${p.badge}</div>` : '';
   const origHtml = p.originalPrice ? `<span class="product-price-original">$${p.originalPrice.toLocaleString()}</span>` : '';
   return `
@@ -5011,6 +5772,9 @@ function renderProductCard(p, small = false) {
       ${badgeHtml}
       <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation();toggleFav('${p.id}',this)">
         <svg width="14" height="14" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="cmp-btn ${isCmp ? 'active' : ''}" onclick="event.stopPropagation();toggleCompare('${p.id}',this)" title="Comparar">
+        <svg width="12" height="12" fill="${isCmp ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
     <div class="product-body">
@@ -5362,12 +6126,87 @@ function toggleFav(id, btn) {
     favorites.push(id);
   }
   localStorage.setItem('tw_favs', JSON.stringify(favorites));
+  updateFavBadge();
   if (btn) {
     const isFav = favorites.includes(id);
     btn.classList.toggle('active', isFav);
     const icon = btn.querySelector('svg');
     if (icon) icon.setAttribute('fill', isFav ? 'currentColor' : 'none');
   }
+}
+
+function updateFavBadge() {
+  const dot = document.getElementById('favDot');
+  const btn = document.querySelector('.fav-btn-nav');
+  if (!dot || !btn) return;
+  const has = favorites.length > 0;
+  dot.classList.toggle('visible', has);
+  btn.classList.toggle('has-favs', has);
+}
+
+function renderFavorites() {
+  const grid = document.getElementById('favGrid');
+  const empty = document.getElementById('favEmpty');
+  const count = document.getElementById('favCount');
+
+  if (favorites.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'flex';
+    count.textContent = '0 productos guardados';
+    updateFavBadge();
+    return;
+  }
+
+  empty.style.display = 'none';
+  const favProducts = favorites.map(id => ALL_PRODUCTS.find(p => p.id === id)).filter(Boolean);
+  count.textContent = `${favProducts.length} producto${favProducts.length !== 1 ? 's' : ''} guardado${favProducts.length !== 1 ? 's' : ''}`;
+
+  grid.innerHTML = favProducts.map(p => {
+    const badgeHtml = p.badge ? `<div class="product-badge ${p.badge === 'NUEVO' ? 'badge-new' : 'badge-sale'}">${p.badge}</div>` : '';
+    const origHtml = p.originalPrice ? `<span class="product-price-original">$${p.originalPrice.toLocaleString()}</span>` : '';
+    return `
+    <div class="product-card" onclick="navigate('product', '${p.id}')">
+      <div class="product-img">
+        <div class="product-img-bg" style="${productBg(p.cat)}"></div>
+        <div class="product-img-icon" style="opacity: 1; width: 100%; height: 100%;">${catIcon(p)}</div>
+        ${badgeHtml}
+        <button class="fav-btn active" onclick="event.stopPropagation();removeFromFav('${p.id}', this)">
+          <svg width="14" height="14" fill="currentColor" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="product-body">
+        <div class="product-name">${p.name}</div>
+        <div class="product-specs">${p.specs}</div>
+        <div class="product-price">$${p.price.toLocaleString()}${origHtml}</div>
+        <button class="btn-add" onclick="event.stopPropagation();addToCart('${p.id}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          AGREGAR
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateFavBadge();
+}
+
+function removeFromFav(id, btn) {
+  const idx = favorites.indexOf(id);
+  if (idx > -1) {
+    favorites.splice(idx, 1);
+  }
+  localStorage.setItem('tw_favs', JSON.stringify(favorites));
+  const p = ALL_PRODUCTS.find(x => x.id === id);
+  if (p) showToast(`${p.name} eliminado de favoritos`);
+  renderFavorites();
+  // Update fav buttons on any visible product cards
+  document.querySelectorAll(`.fav-btn`).forEach(b => {
+    const onclick = b.getAttribute('onclick');
+    if (onclick && onclick.includes(`'${id}'`)) {
+      b.classList.remove('active');
+      const icon = b.querySelector('svg');
+      if (icon) icon.setAttribute('fill', 'none');
+    }
+  });
 }
 
 // ── TOAST ──
@@ -6098,11 +6937,207 @@ function escapeHtml(s) {
 }
 
 // ══════════════════════════════════════
+// COMPARISON
+let compareList = JSON.parse(localStorage.getItem('tw_compare') || '[]');
+const MAX_COMPARE = 4;
+
+function toggleCompare(productId, btn) {
+  const idx = compareList.indexOf(productId);
+  if (idx > -1) {
+    compareList.splice(idx, 1);
+    if (btn) {
+      btn.classList.remove('active');
+      btn.querySelector('svg').setAttribute('fill', 'none');
+    }
+  } else {
+    if (compareList.length >= MAX_COMPARE) {
+      showToast(`Máximo ${MAX_COMPARE} productos para comparar`);
+      return;
+    }
+    compareList.push(productId);
+    if (btn) {
+      btn.classList.add('active');
+      btn.querySelector('svg').setAttribute('fill', 'currentColor');
+    }
+  }
+  saveCompare();
+  updateCompareBadge();
+}
+
+function removeFromCompare(productId) {
+  const idx = compareList.indexOf(productId);
+  if (idx > -1) compareList.splice(idx, 1);
+  saveCompare();
+  updateCompareBadge();
+  renderCompare();
+}
+
+function saveCompare() {
+  localStorage.setItem('tw_compare', JSON.stringify(compareList));
+}
+
+function updateCompareBadge() {
+  // No badge in navbar — compare accessed via catalog cards
+}
+
+function clearCompare() {
+  compareList = [];
+  saveCompare();
+  updateCompareBadge();
+  renderCompare();
+}
+
+function getCompareProducts() {
+  return compareList.map(id => ALL_PRODUCTS.find(p => p.id === id)).filter(Boolean);
+}
+
+function findBestValue(products, specKey) {
+  const vals = products.map(p => {
+    const tech = p.tech || [];
+    const row = tech.find(t => t[0] === specKey);
+    if (!row) return null;
+    const num = parseFloat(String(row[1]).replace(/[^0-9.]/g, ''));
+    return isNaN(num) ? null : num;
+  }).filter(v => v !== null);
+  if (vals.length < 2) return -1;
+  const max = Math.max(...vals);
+  return vals.indexOf(max);
+}
+
+function findLowestPrice(products) {
+  const vals = products.map(p => p.price);
+  return vals.indexOf(Math.min(...vals));
+}
+
+function renderCompare() {
+  const container = document.getElementById('compareContent');
+  const products = getCompareProducts();
+
+  if (products.length === 0) {
+    container.innerHTML = `
+      <div class="compare-empty">
+        <div class="compare-empty-icon">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </div>
+        <h2>COMPARA TU <span style="color:var(--mg)">SETUP</span></h2>
+        <p>Selecciona hasta 4 productos del catálogo para ver sus especificaciones lado a lado.</p>
+        <button class="btn-add" onclick="navigate('catalogo')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          EXPLORAR CATÁLOGO
+        </button>
+      </div>`;
+    return;
+  }
+
+  const maxMsg = products.length >= MAX_COMPARE
+    ? `<div class="compare-max-wrap"><div class="compare-max-msg">Máximo ${MAX_COMPARE} productos — quita uno para agregar otro</div></div>`
+    : '';
+
+  let cardsHtml = products.map(p => {
+    const badgeClass = p.badge === 'NUEVO' ? 'badge-new' : 'badge-sale';
+    const origHtml = p.originalPrice ? `<span class="compare-card-price-orig">$${p.originalPrice.toLocaleString()}</span>` : '';
+    return `
+    <div class="compare-card-shell">
+      <div class="compare-card">
+        <div class="compare-card-img">
+          ${catIcon(p)}
+          <button class="compare-remove-btn" onclick="removeFromCompare('${p.id}')" title="Quitar">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="compare-card-body">
+          <div class="compare-card-brand">${p.brand}</div>
+          <div class="compare-card-name">${p.name}</div>
+          <div class="compare-card-price-row">
+            <span class="compare-card-price">$${p.price.toLocaleString()}</span>
+            ${origHtml}
+          </div>
+          ${p.badge ? `<span class="compare-card-badge ${badgeClass}">${p.badge}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const hasSpecs = products.some(p => p.tech && p.tech.length > 0);
+
+  if (!hasSpecs) {
+    container.innerHTML = `
+      ${maxMsg}
+      <div class="compare-grid has-${products.length}">${cardsHtml}</div>
+      <p class="compare-hint">Usa el botón <strong></strong> en las tarjetas del catálogo para agregar productos</p>`;
+    return;
+  }
+
+  const specKeys = [];
+  products.forEach(p => {
+    (p.tech || []).forEach(t => {
+      if (!specKeys.includes(t[0])) specKeys.push(t[0]);
+    });
+  });
+
+  const bestPriceIdx = findLowestPrice(products);
+
+  const tableRows = specKeys.map(key => {
+    const bestIdx = findBestValue(products, key);
+    return `<tr>
+      <td>${key}</td>
+      ${products.map((p, i) => {
+        const tech = p.tech || [];
+        const row = tech.find(t => t[0] === key);
+        const val = row ? row[1] : '—';
+        const isBest = i === bestIdx && bestIdx > -1 && products.length > 1;
+        return `<td class="${isBest ? 'compare-highlight' : ''}">${val}${isBest ? '<span class="compare-best-badge">★ Best</span>' : ''}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    ${maxMsg}
+    <div class="compare-grid has-${products.length}">${cardsHtml}</div>
+    <div class="compare-table-section">
+      <div class="compare-table-header">
+        <div class="compare-table-title">ESPECIFICACIONES <span>TÉCNICAS</span></div>
+      </div>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Especificación</th>
+              ${products.map(p => `<th>${p.name}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Precio</td>
+              ${products.map((p, i) => `
+                <td class="${i === bestPriceIdx ? 'compare-highlight' : ''}">
+                  $${p.price.toLocaleString()}
+                  ${i === bestPriceIdx && products.length > 1 ? '<span class="compare-best-badge">★ Best</span>' : ''}
+                </td>
+              `).join('')}
+            </tr>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="compare-actions">
+      <button class="compare-clear-btn" onclick="clearCompare()">Limpiar todo</button>
+      <button class="btn-add" onclick="navigate('catalogo')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Agregar más
+      </button>
+    </div>
+    <p class="compare-hint">Usa el botón <strong>⊞</strong> en las tarjetas del catálogo para agregar productos</p>`;
+}
+
+// ══════════════════════════════════════
 // INIT
 document.addEventListener('DOMContentLoaded', () => {
   initMarquee();
   loadFeatured();
   updateBadge();
+  updateFavBadge();
   initReveal();
   refreshAuthClass();
 
