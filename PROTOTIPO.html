@@ -1,0 +1,2891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH/WHITE — Prototipo · Boceto Funcional v0.1</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Kalam:wght@300;400;700&display=swap');
+
+/* ════════════════════════════════════════════
+   TOKENS — paper / ink wireframe system
+═════════════════════════════════════════════ */
+:root {
+  --paper:        #F4EFE3;
+  --paper-dim:    #EDE6D5;
+  --paper-deep:   #E2DAC4;
+  --ink:          #1C1B19;
+  --ink-soft:     #5A5751;
+  --ink-faint:    #8A857B;
+  --line:         #C7C0B0;
+  --line-strong:  #A39B86;
+  --pen-red:      #C8412B;
+  --pen-blue:     #2B4C7E;
+  --pen-green:    #4F6B3C;
+  --highlight:    #F5E89A;
+  --shadow:       rgba(28, 27, 25, 0.06);
+
+  --serif: 'Fraunces', 'Times New Roman', serif;
+  --mono:  'JetBrains Mono', 'Courier New', monospace;
+  --hand:  'Caveat', 'Comic Sans MS', cursive;
+  --hand-tight: 'Kalam', 'Caveat', cursive;
+}
+
+/* ════════════════════════════════════════════
+   RESET
+═════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-weight: 400;
+}
+
+/* ── Subtle dot grid like graph paper ── */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle, var(--line) 0.6px, transparent 0.7px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+  opacity: 0.45;
+}
+
+/* ── Paper grain ── */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.10 0 0 0 0 0.09 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+}
+
+/* ════════════════════════════════════════════
+   GLOBAL TYPOGRAPHY
+═════════════════════════════════════════════ */
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; }
+.hand { font-family: var(--hand); }
+.hand-tight { font-family: var(--hand-tight); }
+.mono { font-family: var(--mono); }
+.serif { font-family: var(--serif); }
+
+a, button { font-family: inherit; color: inherit; }
+button { background: none; border: none; cursor: pointer; }
+
+::selection { background: var(--highlight); color: var(--ink); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--paper-dim); }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 2px solid var(--paper-dim);
+  border-radius: 0;
+}
+
+/* ════════════════════════════════════════════
+   SHELL — top status bar + side rail
+═════════════════════════════════════════════ */
+#status-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 32px; z-index: 1000;
+  background: var(--ink); color: var(--paper);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--ink);
+}
+#status-bar .stamp {
+  display: inline-flex; align-items: center; gap: 8px;
+}
+#status-bar .stamp::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--pen-red); animation: blink 1.6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+#status-bar .meta { display: flex; gap: 22px; opacity: 0.78; }
+#status-bar .meta span { display: inline-flex; gap: 6px; }
+#status-bar .meta b { color: var(--paper); font-weight: 500; }
+
+/* ── annotation toggle pill ── */
+.toggle-notes {
+  position: fixed; right: 24px; top: 48px; z-index: 950;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 8px 14px 6px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.toggle-notes:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+.toggle-notes:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.toggle-notes .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--pen-red);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink);
+}
+body.notes-off .toggle-notes .dot { background: var(--paper-deep); }
+body.notes-off .annotation,
+body.notes-off .callout,
+body.notes-off .arrow,
+body.notes-off .stamp-note,
+body.notes-off .stickynote { display: none !important; }
+
+/* ════════════════════════════════════════════
+   LAYOUT
+═════════════════════════════════════════════ */
+.app {
+  position: relative; z-index: 1;
+  padding-top: 32px;
+}
+
+.container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 56px;
+  position: relative;
+}
+
+/* ════════════════════════════════════════════
+   NAVBAR
+═════════════════════════════════════════════ */
+#navbar {
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper);
+  position: sticky; top: 32px; z-index: 900;
+}
+.nav-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 56px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 72px;
+  gap: 40px;
+}
+.brand {
+  display: inline-flex; align-items: baseline; gap: 4px;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+.brand .slash {
+  font-family: var(--hand);
+  color: var(--pen-red);
+  font-size: 32px;
+  transform: translateY(2px);
+}
+.brand small {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-left: 8px;
+  border: 1px solid var(--line-strong);
+  padding: 2px 6px;
+  align-self: center;
+}
+
+.nav-links {
+  display: flex; gap: 0;
+  list-style: none;
+  justify-self: center;
+  border-left: 1px dashed var(--line-strong);
+  border-right: 1px dashed var(--line-strong);
+}
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  border-right: 1px dashed var(--line-strong);
+  position: relative;
+}
+.nav-links a:last-child { border-right: none; }
+.nav-links a:hover { background: var(--paper-dim); color: var(--ink); }
+.nav-links a.active { color: var(--ink); background: var(--paper-deep); }
+.nav-links a.active::after {
+  content: ""; position: absolute; left: 50%; bottom: -1px;
+  width: 60%; height: 2px;
+  background: var(--pen-red);
+  transform: translateX(-50%);
+}
+
+.nav-actions { display: flex; gap: 10px; align-items: center; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s, background 0.15s;
+}
+.icon-btn:hover { background: var(--paper-dim); transform: translateY(-1px); }
+.icon-btn svg { width: 16px; height: 16px; stroke: var(--ink); fill: none; stroke-width: 1.6; }
+.icon-btn .badge {
+  position: absolute; top: -7px; right: -7px;
+  min-width: 18px; height: 18px;
+  background: var(--pen-red); color: var(--paper);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  border: 1.5px solid var(--paper);
+}
+
+/* ════════════════════════════════════════════
+   ANNOTATIONS — sticky notes, callouts, arrows
+═════════════════════════════════════════════ */
+.annotation {
+  font-family: var(--hand);
+  color: var(--pen-red);
+  font-size: 19px;
+  line-height: 1.15;
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  letter-spacing: 0.01em;
+}
+.annotation b { font-weight: 700; }
+.annotation .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  border: 1.5px solid var(--pen-red);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+
+.callout {
+  position: absolute;
+  font-family: var(--hand-tight);
+  color: var(--pen-blue);
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 5;
+  font-weight: 400;
+  background: var(--paper);
+  padding: 4px 8px;
+  border: 1px dashed var(--pen-blue);
+  line-height: 1.25;
+  max-width: 200px;
+}
+
+.stickynote {
+  position: absolute;
+  background: var(--highlight);
+  padding: 14px 16px 16px;
+  font-family: var(--hand);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.25;
+  width: 200px;
+  box-shadow: 4px 5px 0 rgba(28,27,25,0.12);
+  z-index: 6;
+  transform: rotate(-2deg);
+}
+.stickynote::before {
+  content: "";
+  position: absolute; top: -8px; left: 50%;
+  width: 60px; height: 14px;
+  background: rgba(255,255,255,0.45);
+  transform: translateX(-50%) rotate(-3deg);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.stickynote.tilt-r { transform: rotate(2.5deg); }
+.stickynote.tilt-l { transform: rotate(-3deg); }
+.stickynote .tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pen-red);
+  background: rgba(200, 65, 43, 0.08);
+  padding: 2px 7px;
+  border: 1px solid var(--pen-red);
+  margin-bottom: 8px;
+}
+
+.stamp-note {
+  position: absolute;
+  border: 2px solid var(--pen-red);
+  color: var(--pen-red);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  transform: rotate(-7deg);
+  background: rgba(200, 65, 43, 0.04);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.arrow svg {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+  overflow: visible;
+}
+.arrow path {
+  stroke: var(--pen-red);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 4;
+}
+.arrow.solid path { stroke-dasharray: 0; }
+.arrow.blue path { stroke: var(--pen-blue); }
+
+/* ════════════════════════════════════════════
+   COMPONENT BASICS
+═════════════════════════════════════════════ */
+.section {
+  padding: 80px 0 60px;
+  position: relative;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.section:last-child { border-bottom: none; }
+
+.section-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+.section-tag::before {
+  content: ""; width: 22px; height: 1px;
+  background: var(--ink-soft);
+}
+
+.section-h {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.02;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.section-h em {
+  font-style: italic;
+  font-family: var(--serif);
+  color: var(--pen-red);
+}
+.section-h .underline {
+  position: relative; display: inline-block;
+}
+.section-h .underline::after {
+  content: ""; position: absolute; left: -2%; bottom: -4px;
+  width: 104%; height: 9px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 9'%3E%3Cpath d='M2 5 Q 50 2, 100 4 T 198 4' stroke='%23C8412B' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat;
+  background-size: 100% 100%;
+}
+
+.section-sub {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  max-width: 540px;
+  line-height: 1.65;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 13px 22px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); background: var(--paper-dim); }
+.btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary:hover { background: var(--ink); color: var(--paper); }
+.btn.ghost { box-shadow: none; border-style: dashed; }
+.btn.ghost:hover { box-shadow: none; transform: none; background: var(--paper-dim); }
+.btn.small { padding: 8px 14px; font-size: 10.5px; }
+.btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* ── Placeholder media boxes ── */
+.placeholder {
+  position: relative;
+  background: var(--paper-dim);
+  border: 1.5px dashed var(--line-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  overflow: hidden;
+}
+.placeholder::before, .placeholder::after {
+  content: "";
+  position: absolute;
+  background: var(--line-strong);
+  opacity: 0.6;
+}
+.placeholder::before {
+  width: 141.4%; height: 1px;
+  top: 50%; left: -20.7%;
+  transform: rotate(var(--angle, 30deg));
+  transform-origin: center;
+}
+.placeholder.cross::before {
+  inset: 0; height: 100%; width: 100%;
+  background:
+    linear-gradient(to top right, transparent calc(50% - 0.6px), var(--line-strong) calc(50% - 0.5px), var(--line-strong) calc(50% + 0.5px), transparent calc(50% + 0.6px)),
+    linear-gradient(to top left,  transparent calc(50% - 0.6px), var(--line-strong) calc(50% - 0.5px), var(--line-strong) calc(50% + 0.5px), transparent calc(50% + 0.6px));
+  transform: none;
+  opacity: 0.5;
+}
+.placeholder::after { display: none; }
+.placeholder .label {
+  position: relative; z-index: 2;
+  background: var(--paper-dim);
+  padding: 4px 10px;
+  border: 1px solid var(--line-strong);
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════
+   HERO
+═════════════════════════════════════════════ */
+#hero {
+  padding: 90px 0 100px;
+  position: relative;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 28px;
+}
+.hero-eyebrow::before {
+  content: "◇"; color: var(--pen-red); font-size: 10px;
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(56px, 8.5vw, 110px);
+  line-height: 0.95;
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  margin-bottom: 24px;
+}
+.hero-title .accent {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--pen-red);
+  position: relative;
+}
+.hero-title .accent::after {
+  content: ""; position: absolute; left: 0; bottom: 5px;
+  width: 100%; height: 12px;
+  background: var(--highlight);
+  z-index: -1; opacity: 0.85;
+}
+.hero-title .scribble {
+  position: relative;
+  font-family: var(--hand);
+  font-style: normal;
+  display: inline-block;
+}
+.hero-title .scribble::before {
+  content: "";
+  position: absolute; inset: -8px -10px;
+  border: 2px solid var(--pen-red);
+  border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+  z-index: -1;
+}
+.hero-sub {
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 480px;
+  color: var(--ink-soft);
+  margin-bottom: 36px;
+}
+.hero-cta-row {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 50px;
+}
+.hero-stats {
+  display: flex; gap: 50px;
+  padding-top: 26px;
+  border-top: 1px dashed var(--line-strong);
+}
+.hero-stat-num {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.hero-stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* hero right side — product card mockup */
+.hero-card {
+  position: relative;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  padding: 24px;
+  transform: rotate(1.5deg);
+  box-shadow: 8px 10px 0 var(--paper-deep);
+}
+.hero-card .corner {
+  position: absolute; width: 14px; height: 14px;
+  border: 2px solid var(--ink);
+}
+.hero-card .corner.tl { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+.hero-card .corner.tr { top: -6px; right: -6px; border-left: none; border-bottom: none; }
+.hero-card .corner.bl { bottom: -6px; left: -6px; border-right: none; border-top: none; }
+.hero-card .corner.br { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+.hero-card-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 14px;
+  display: flex; justify-content: space-between;
+}
+.hero-card-img {
+  aspect-ratio: 4/3;
+  margin-bottom: 18px;
+}
+.hero-card-name {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.hero-card-meta {
+  display: flex; gap: 14px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.hero-card-meta b { color: var(--ink); font-weight: 600; }
+.hero-card-foot {
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.hero-card-price {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+}
+.hero-card-price small {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-decoration: line-through;
+  color: var(--ink-faint);
+  font-weight: 400;
+  display: block;
+}
+
+/* ════════════════════════════════════════════
+   CATEGORIES
+═════════════════════════════════════════════ */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 50px;
+}
+.cat-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 26px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.cat-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.cat-card-num {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+.cat-card-img {
+  aspect-ratio: 16/10;
+  margin-bottom: 18px;
+}
+.cat-card-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
+}
+.cat-card-desc {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+.cat-card-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px dashed var(--line-strong);
+  padding-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cat-card-foot .arrow-r { font-family: var(--hand); font-size: 22px; color: var(--pen-red); }
+
+/* ════════════════════════════════════════════
+   PRODUCTS GRID
+═════════════════════════════════════════════ */
+.prod-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 40px;
+  gap: 40px;
+}
+.prod-controls {
+  display: flex; gap: 8px; align-items: center;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.chip:hover { background: var(--paper-dim); border-color: var(--ink); }
+.chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.prod-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.prod-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.prod-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.prod-card .ribbon {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--pen-red); color: var(--paper);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  padding: 3px 7px;
+  text-transform: uppercase;
+}
+.prod-card .fav {
+  position: absolute; top: 8px; right: 8px;
+  width: 30px; height: 30px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.prod-card .fav:hover { background: var(--paper-dim); }
+.prod-card .fav svg { width: 13px; height: 13px; stroke: var(--ink); fill: none; stroke-width: 1.5; }
+.prod-card .fav.on svg { fill: var(--pen-red); stroke: var(--pen-red); }
+.prod-img {
+  aspect-ratio: 1/1;
+  margin-bottom: 14px;
+}
+.prod-cat {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.prod-name {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  margin-bottom: 10px;
+  min-height: 40px;
+}
+.prod-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line-strong);
+}
+.prod-price {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+}
+.prod-add {
+  width: 32px; height: 32px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.prod-add:hover { background: var(--ink); color: var(--paper); transform: rotate(90deg); }
+.prod-add svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+
+/* ════════════════════════════════════════════
+   OFFER BANNER
+═════════════════════════════════════════════ */
+.offer {
+  position: relative;
+  margin-top: 60px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 40px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 30px;
+  border: 1.5px solid var(--ink);
+}
+.offer::before {
+  content: "";
+  position: absolute; inset: -8px; pointer-events: none;
+  border: 1px dashed var(--ink-soft);
+}
+.offer-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+.offer h3 {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.offer h3 b { font-weight: 600; color: var(--highlight); }
+.offer-side {
+  text-align: right;
+  display: flex; align-items: center; gap: 28px;
+}
+.offer-stat {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.offer-stat strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+.offer .btn { background: var(--highlight); color: var(--ink); border-color: var(--highlight); box-shadow: 3px 3px 0 var(--paper); }
+.offer .btn:hover { box-shadow: 4px 4px 0 var(--paper); }
+
+/* ════════════════════════════════════════════
+   TESTIMONIALS
+═════════════════════════════════════════════ */
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 50px;
+}
+.testi-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 26px 24px;
+  position: relative;
+}
+.testi-card:nth-child(2) { transform: rotate(-0.6deg); }
+.testi-card:nth-child(3) { transform: rotate(0.4deg); }
+.testi-stars {
+  display: flex; gap: 2px; margin-bottom: 14px;
+  font-family: var(--hand); font-size: 22px; color: var(--pen-red);
+  line-height: 1;
+}
+.testi-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+.testi-author {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.testi-author b { color: var(--ink); font-weight: 600; }
+
+/* ════════════════════════════════════════════
+   VIEW SYSTEM (SPA)
+═════════════════════════════════════════════ */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ════════════════════════════════════════════
+   CATALOG VIEW
+═════════════════════════════════════════════ */
+.cat-page {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
+  padding: 60px 0;
+}
+.cat-side {
+  border-right: 1px dashed var(--line-strong);
+  padding-right: 30px;
+}
+.cat-side h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
+}
+.cat-side .filter-group { margin-bottom: 30px; }
+.cat-side label {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 0;
+  color: var(--ink-soft);
+  transition: color 0.15s;
+}
+.cat-side label:hover { color: var(--ink); }
+.cat-side label input { accent-color: var(--pen-red); }
+.cat-side .price-bar {
+  height: 8px;
+  background: var(--paper-dim);
+  border: 1px solid var(--line-strong);
+  position: relative;
+  margin-top: 10px;
+}
+.cat-side .price-bar::before {
+  content: ""; position: absolute;
+  left: 15%; right: 25%; top: -1px; bottom: -1px;
+  background: var(--ink);
+}
+.cat-side .price-bar::after {
+  content: "$2,000 — $25,000";
+  position: absolute; top: 14px; left: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.cat-main-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 18px; margin-bottom: 24px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.cat-main-head .count {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+}
+.cat-main-head .count b { color: var(--ink); font-family: var(--serif); font-size: 16px; font-weight: 600; }
+.cat-main-head .sort {
+  display: inline-flex; gap: 0; align-items: center;
+  border: 1px solid var(--ink);
+}
+.cat-main-head .sort label {
+  font-family: var(--mono); font-size: 10px;
+  padding: 8px 10px;
+  border-right: 1px solid var(--ink);
+  color: var(--ink-soft); letter-spacing: 0.14em; text-transform: uppercase;
+}
+.cat-main-head .sort select {
+  border: none; background: var(--paper);
+  font-family: var(--mono); font-size: 11px;
+  padding: 8px 12px; outline: none; cursor: pointer;
+}
+
+.cat-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* ════════════════════════════════════════════
+   PRODUCT DETAIL VIEW
+═════════════════════════════════════════════ */
+.pd-page { padding: 60px 0; }
+.breadcrumbs {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 36px;
+}
+.breadcrumbs span { color: var(--ink); }
+.breadcrumbs a { color: var(--ink-soft); cursor: pointer; text-decoration: none; }
+.breadcrumbs a:hover { color: var(--ink); }
+.breadcrumbs .sep { margin: 0 10px; color: var(--line-strong); }
+
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: flex-start;
+}
+.pd-gallery {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 14px;
+}
+.pd-thumbs {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pd-thumb {
+  aspect-ratio: 1/1;
+  background: var(--paper-dim);
+  border: 1.5px dashed var(--line-strong);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s;
+}
+.pd-thumb.active { border-color: var(--ink); border-style: solid; }
+.pd-main-img {
+  aspect-ratio: 1/1;
+}
+
+.pd-info h1 {
+  font-family: var(--serif);
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+}
+.pd-info .stars {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 24px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+.pd-info .stars span { font-family: var(--hand); font-size: 22px; color: var(--pen-red); line-height: 1; letter-spacing: 1px; }
+.pd-price-block {
+  padding: 22px 0;
+  margin: 24px 0;
+  border-top: 1px dashed var(--line-strong);
+  border-bottom: 1px dashed var(--line-strong);
+  display: flex; align-items: baseline; gap: 14px;
+}
+.pd-price-block .now {
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.pd-price-block .was {
+  font-family: var(--mono);
+  font-size: 14px;
+  text-decoration: line-through;
+  color: var(--ink-faint);
+}
+.pd-price-block .save {
+  background: var(--highlight);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  margin-left: auto;
+}
+.pd-desc {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin-bottom: 26px;
+}
+.pd-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.pd-spec-grid div {
+  font-family: var(--mono);
+  font-size: 11px;
+  border: 1px dashed var(--line-strong);
+  padding: 10px 12px;
+}
+.pd-spec-grid div span {
+  display: block;
+  color: var(--ink-faint);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 9.5px;
+  margin-bottom: 4px;
+}
+.pd-spec-grid div b {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pd-cta {
+  display: flex; gap: 12px; margin-bottom: 24px;
+}
+.pd-qty {
+  display: inline-flex; align-items: center;
+  border: 1.5px solid var(--ink);
+}
+.pd-qty button {
+  width: 36px; height: 44px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  border-right: 1px solid var(--ink);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pd-qty button:hover { background: var(--paper-dim); }
+.pd-qty button:last-child { border-right: none; border-left: 1px solid var(--ink); }
+.pd-qty input {
+  width: 48px;
+  border: none;
+  background: var(--paper);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+}
+.pd-meta-row {
+  display: flex; flex-direction: column; gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  padding-top: 18px;
+  border-top: 1px dashed var(--line-strong);
+}
+.pd-meta-row span { display: flex; gap: 8px; }
+.pd-meta-row b { color: var(--ink); font-weight: 600; }
+
+/* ════════════════════════════════════════════
+   CART VIEW
+═════════════════════════════════════════════ */
+.cart-page {
+  padding: 60px 0;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 50px;
+}
+.cart-page h1 {
+  font-family: var(--serif);
+  font-size: 56px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  margin-bottom: 30px;
+  grid-column: 1 / -1;
+}
+.cart-page h1 em { font-style: italic; color: var(--pen-red); }
+.cart-list {
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+}
+.cart-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.cart-row:last-child { border-bottom: none; }
+.cart-row-img {
+  aspect-ratio: 1/1;
+}
+.cart-row-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.cart-row-meta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cart-row-qty {
+  display: inline-flex; border: 1px solid var(--ink);
+}
+.cart-row-qty button {
+  width: 26px; height: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cart-row-qty button:hover { background: var(--paper-dim); }
+.cart-row-qty span {
+  width: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  border-left: 1px solid var(--ink);
+  border-right: 1px solid var(--ink);
+}
+.cart-row-price {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  min-width: 90px; text-align: right;
+}
+.cart-row-rm {
+  width: 26px; height: 26px;
+  border: 1px solid var(--line-strong);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cart-row-rm:hover { background: var(--pen-red); color: var(--paper); border-color: var(--pen-red); }
+.cart-row-rm svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.cart-summary {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 26px;
+  align-self: flex-start;
+  position: sticky; top: 130px;
+}
+.cart-summary h3 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink);
+}
+.summary-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.summary-row b { color: var(--ink); font-weight: 600; font-family: var(--serif); font-size: 14px; }
+.summary-row.total {
+  border-top: 1px dashed var(--line-strong);
+  margin-top: 14px;
+  padding-top: 18px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.summary-row.total b { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
+.summary-promo {
+  display: flex; gap: 8px; margin: 18px 0;
+}
+.summary-promo input {
+  flex: 1;
+  border: 1px dashed var(--line-strong);
+  background: var(--paper);
+  padding: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  outline: none;
+}
+.summary-promo input:focus { border-style: solid; border-color: var(--ink); }
+.summary-promo button {
+  border: 1px solid var(--ink);
+  padding: 0 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.summary-promo button:hover { background: var(--ink); color: var(--paper); }
+
+/* ════════════════════════════════════════════
+   CHECKOUT VIEW
+═════════════════════════════════════════════ */
+.checkout-page { padding: 60px 0; }
+.steps {
+  display: flex; gap: 0;
+  margin-bottom: 50px;
+  border: 1.5px solid var(--ink);
+}
+.step {
+  flex: 1;
+  padding: 18px 22px;
+  border-right: 1.5px solid var(--ink);
+  background: var(--paper);
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: var(--paper-dim); }
+.step.active { background: var(--ink); color: var(--paper); }
+.step.done { background: var(--paper-dim); }
+.step-num {
+  width: 32px; height: 32px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 16px;
+}
+.step.active .step-num { background: var(--paper); color: var(--ink); }
+.step-info h5 {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-bottom: 2px;
+}
+.step-info p {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 50px;
+}
+.form-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 36px;
+}
+.form-card h3 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin-bottom: 6px;
+}
+.form-card .form-sub {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-bottom: 28px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 16px;
+}
+.form-row.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.field input, .field select {
+  border: none;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  padding: 10px 2px;
+  font-family: var(--serif);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s;
+  color: var(--ink);
+}
+.field input:focus, .field select:focus { border-color: var(--pen-red); }
+.field input::placeholder { color: var(--ink-faint); font-style: italic; }
+
+.shipping-options {
+  display: grid; gap: 12px;
+  margin-top: 6px;
+}
+.shipping-opt {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line-strong);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.shipping-opt:hover { border-color: var(--ink); }
+.shipping-opt.sel { border-color: var(--pen-red); background: rgba(200, 65, 43, 0.04); }
+.shipping-opt input { accent-color: var(--pen-red); }
+.shipping-opt .so-name {
+  font-family: var(--serif);
+  font-size: 16px; font-weight: 600;
+  flex: 1;
+}
+.shipping-opt .so-eta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.shipping-opt .so-price {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════════
+   ACCOUNT VIEW
+═════════════════════════════════════════════ */
+.account-page {
+  padding: 80px 0;
+  display: grid;
+  place-items: center;
+}
+.account-card {
+  width: 460px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 42px 38px;
+  position: relative;
+  box-shadow: 6px 8px 0 var(--paper-deep);
+}
+.account-card::before {
+  content: "PROTOTIPO · MOCK AUTH";
+  position: absolute; top: -12px; left: 24px;
+  background: var(--paper);
+  padding: 0 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--pen-red);
+  border: 1.5px solid var(--pen-red);
+}
+.account-card h2 {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.account-card .account-sub {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-bottom: 30px;
+}
+.account-tabs {
+  display: flex; gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--ink);
+}
+.account-tab {
+  flex: 1;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.account-tab.active { color: var(--ink); border-bottom-color: var(--pen-red); }
+
+/* ════════════════════════════════════════════
+   SETUP BUILDER VIEW
+═════════════════════════════════════════════ */
+.builder-page { padding: 60px 0; }
+.builder-head {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.builder-head .section-tag { justify-content: center; display: inline-flex; }
+.builder-head .section-tag::before { display: none; }
+
+.builder-frame {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 50px;
+  border: 1.5px solid var(--ink);
+  padding: 40px;
+  background: var(--paper);
+}
+.builder-controls h3 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.builder-block { margin-bottom: 30px; }
+.builder-block h5 {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.budget-display {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  display: flex; align-items: baseline; gap: 12px;
+}
+.budget-display small {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+  letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+}
+.range-track {
+  height: 4px;
+  background: var(--paper-deep);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+}
+.range-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 35%;
+  background: var(--ink);
+  border-radius: 2px;
+}
+.range-thumb {
+  position: absolute; top: 50%; left: 35%;
+  width: 18px; height: 18px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+}
+.range-marks {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-top: 10px;
+  letter-spacing: 0.05em;
+}
+
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.usecase {
+  padding: 14px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.usecase:hover { border-color: var(--ink); }
+.usecase.sel {
+  border-color: var(--pen-red);
+  background: rgba(200, 65, 43, 0.05);
+}
+.usecase .ico {
+  font-family: var(--hand); font-size: 22px; margin-bottom: 4px;
+  color: var(--pen-red);
+}
+.usecase b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+}
+.usecase span {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+}
+
+.builder-result h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ink);
+}
+.build-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.build-item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px dashed var(--line-strong);
+}
+.build-item-img {
+  aspect-ratio: 1/1;
+}
+.build-item-cat {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
+}
+.build-item-name {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.build-item-price {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.build-total {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1.5px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.build-total small {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  display: block; margin-bottom: 2px;
+}
+.build-total b {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ════════════════════════════════════════════
+   FOOTER
+═════════════════════════════════════════════ */
+footer {
+  margin-top: 80px;
+  padding: 50px 0 30px;
+  border-top: 1px dashed var(--line-strong);
+  background: var(--paper);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.footer-brand h2 {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 400;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.footer-brand h2 .slash { color: var(--pen-red); font-family: var(--hand); }
+.footer-brand p {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 320px;
+}
+.footer-col h5 {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: var(--ink);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
+}
+.footer-col ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.footer-col a {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.footer-col a:hover { color: var(--pen-red); }
+.footer-foot {
+  border-top: 1px dashed var(--line-strong);
+  padding-top: 20px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+═════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--ink); color: var(--paper);
+  padding: 14px 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  z-index: 2000;
+  border: 1.5px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--paper-deep);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(.18,.8,.32,1);
+}
+.toast.on {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast::before {
+  content: "✓";
+  margin-right: 10px;
+  color: var(--highlight);
+  font-family: var(--serif);
+  font-size: 16px;
+}
+
+/* ════════════════════════════════════════════
+   LEGEND
+═════════════════════════════════════════════ */
+.legend {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  padding: 16px 18px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  z-index: 800;
+  box-shadow: 3px 3px 0 var(--ink);
+  max-width: 240px;
+}
+.legend h6 {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pen-red);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--line-strong);
+}
+.legend .row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 0;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.legend .swatch {
+  width: 18px; height: 12px; flex-shrink: 0;
+  display: inline-block;
+}
+.legend .swatch.note { background: var(--highlight); border: 1px solid var(--ink); }
+.legend .swatch.handcoral { background: transparent; border: 1.5px dashed var(--pen-red); }
+.legend .swatch.callout { background: var(--paper); border: 1px dashed var(--pen-blue); }
+.legend .swatch.real { background: var(--paper-dim); border: 1.5px solid var(--ink); }
+
+body.notes-off .legend { display: none; }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+═════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .container, .nav-inner { padding: 0 32px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 50px; }
+  .cat-grid, .testi-grid { grid-template-columns: 1fr; }
+  .prod-grid, .cat-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .pd-grid, .cart-page, .checkout-grid, .builder-frame { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .annotation, .callout, .stickynote, .arrow, .stamp-note { display: none; }
+  .legend { display: none; }
+  .nav-links { display: none; }
+}
+@media (max-width: 640px) {
+  .container, .nav-inner { padding: 0 18px; }
+  .prod-grid, .cat-grid-3, .footer-grid { grid-template-columns: 1fr; }
+  .cat-page { grid-template-columns: 1fr; }
+  .cat-side { border: none; padding: 0; }
+  .offer { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .offer-side { text-align: left; flex-direction: column; align-items: flex-start; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     STATUS BAR — global meta about prototype state
+═══════════════════════════════════════════════ -->
+<div id="status-bar">
+  <span class="stamp">PROTOTIPO · v0.1 · FIG/01</span>
+  <span class="meta">
+    <span><b>FILE</b> tech-white.fig</span>
+    <span><b>STAGE</b> Wireframe — Lo-Fi</span>
+    <span><b>BY</b> DODOZ</span>
+    <span><b>LAST</b> 05·05·26</span>
+  </span>
+</div>
+
+<!-- annotation toggle -->
+<button class="toggle-notes" onclick="toggleNotes()" title="Mostrar / ocultar anotaciones">
+  <span class="dot"></span>
+  <span>Notas</span>
+</button>
+
+<!-- legend -->
+<div class="legend">
+  <h6>Leyenda · Boceto</h6>
+  <div class="row"><span class="swatch real"></span> Componente real</div>
+  <div class="row"><span class="swatch note"></span> Sticky · explicación</div>
+  <div class="row"><span class="swatch handcoral"></span> Anotación a mano</div>
+  <div class="row"><span class="swatch callout"></span> Callout técnico</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="brand" onclick="navigate('home')">
+        <span>tech</span><span class="slash">/</span><span>white</span>
+        <small>v0.1</small>
+      </div>
+      <ul class="nav-links">
+        <li><a class="active" data-page="home" onclick="navigate('home')">Inicio</a></li>
+        <li><a data-page="catalogo" onclick="navigate('catalogo')">Catálogo</a></li>
+        <li><a data-page="builder" onclick="navigate('builder')">Setup Builder</a></li>
+        <li><a data-page="cuenta" onclick="navigate('cuenta')">Cuenta</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn" onclick="navigate('cuenta')" title="Cuenta">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+        <button class="icon-btn" title="Favoritos">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="navigate('cart')" title="Carrito">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="badge" id="cartBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: HOME
+  ═══════════════════════════════════════════════ -->
+  <div class="view active" id="view-home">
+
+    <!-- HERO -->
+    <section id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-text">
+            <p class="hero-eyebrow">Hardware Gaming · CDMX · México</p>
+            <h1 class="hero-title">
+              Lleva tu<br>
+              <span class="accent">Setup</span><br>
+              al <em>siguiente</em><br>
+              <span class="scribble">nivel.</span>
+            </h1>
+            <p class="hero-sub">Componentes de vanguardia. Estética impecable. Todo diseñado para llevar tu rig al límite — desde el primer build hasta la sexta GPU.</p>
+            <div class="hero-cta-row">
+              <button class="btn primary" onclick="navigate('catalogo')">
+                Compra ya
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn ghost" onclick="navigate('builder')">Arma tu setup</button>
+            </div>
+            <div class="hero-stats">
+              <div>
+                <div class="hero-stat-num">500+</div>
+                <div class="hero-stat-label">Productos</div>
+              </div>
+              <div>
+                <div class="hero-stat-num">2K+</div>
+                <div class="hero-stat-label">Clientes</div>
+              </div>
+              <div>
+                <div class="hero-stat-num">24/7</div>
+                <div class="hero-stat-label">Soporte</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero floating card mockup -->
+          <div class="hero-card">
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+            <div class="hero-card-label">
+              <span>◇ Drop activo</span>
+              <span>HW · 001</span>
+            </div>
+            <div class="hero-card-img placeholder cross"><span class="label">RTX 4060 Ti · img</span></div>
+            <div class="hero-card-name">RTX 4060 Ti<br>8GB ZOTAC</div>
+            <div class="hero-card-meta">
+              <span><b>4352</b> CUDA</span>
+              <span><b>8GB</b> GDDR6</span>
+              <span><b>2535</b> MHz</span>
+            </div>
+            <div class="hero-card-foot">
+              <div class="hero-card-price">
+                $11,999
+                <small>$14,999</small>
+              </div>
+              <button class="btn small" onclick="addToCart('h1','RTX 4060 Ti',11999)">Agregar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- annotations -->
+      <div class="stickynote tilt-l" style="top: 130px; left: -80px;">
+        <span class="tag">Sección 01 · HERO</span>
+        Banner principal. CTA primario lleva a <b>/catálogo</b>; el secundario lleva al <b>Setup Builder</b>.
+      </div>
+      <div class="annotation" style="top: 280px; right: 10px; max-width: 240px;">
+        <span class="num">01</span>
+        Tarjeta flotante con el "drop" de la semana — botón <b>Agregar</b> ya conectado al carrito ✓
+      </div>
+      <div class="arrow" style="top: 320px; right: 230px;">
+        <svg width="120" height="80">
+          <path d="M5 70 Q 60 50, 110 10" />
+          <path d="M105 5 L 115 8 L 110 18" stroke-dasharray="0" />
+        </svg>
+      </div>
+      <div class="callout" style="bottom: 95px; left: 35%;">
+        Tipografía display: <b>Fraunces</b> serif italic + handwriting de acento.
+      </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="section">
+      <div class="container">
+        <div class="section-tag">02 · Explora</div>
+        <h2 class="section-h">Categorías <em>Destacadas</em></h2>
+        <p class="section-sub">Tres puertas de entrada al catálogo. Cada tarjeta filtra el grid por tipo de producto.</p>
+
+        <div class="cat-grid">
+          <div class="cat-card" onclick="navigate('catalogo','monitores')">
+            <div class="cat-card-num">CAT · 01</div>
+            <div class="cat-card-img placeholder cross"><span class="label">monitor.png</span></div>
+            <h3 class="cat-card-title">Monitores de<br>alta gama</h3>
+            <p class="cat-card-desc">144Hz — 4K — 1ms. Inmersión total para cada batalla.</p>
+            <div class="cat-card-foot"><span>Ver más</span><span class="arrow-r">→</span></div>
+          </div>
+          <div class="cat-card" onclick="navigate('catalogo','hardware')">
+            <div class="cat-card-num">CAT · 02</div>
+            <div class="cat-card-img placeholder cross"><span class="label">gpu · cpu · ram</span></div>
+            <h3 class="cat-card-title">Hardware y<br>componentes</h3>
+            <p class="cat-card-desc">GPUs, CPUs, RAM y más. Potencia real para tu build.</p>
+            <div class="cat-card-foot"><span>Ver más</span><span class="arrow-r">→</span></div>
+          </div>
+          <div class="cat-card" onclick="navigate('catalogo','perifericos')">
+            <div class="cat-card-num">CAT · 03</div>
+            <div class="cat-card-img placeholder cross"><span class="label">teclado · mouse</span></div>
+            <h3 class="cat-card-title">Periféricos y<br>accesorios</h3>
+            <p class="cat-card-desc">Teclados, mice, headsets. Precisión ganadora.</p>
+            <div class="cat-card-foot"><span>Ver más</span><span class="arrow-r">→</span></div>
+          </div>
+        </div>
+
+        <div class="annotation" style="top: 60px; right: 30px;">
+          <span class="num">02</span>
+          <b>Click en tarjeta</b> →<br>filtra catálogo por categoría
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="section">
+      <div class="container">
+        <div class="prod-head">
+          <div>
+            <div class="section-tag">03 · Selección Editorial</div>
+            <h2 class="section-h">Productos <em>destacados</em></h2>
+          </div>
+          <div class="prod-controls">
+            <button class="chip active">Todo</button>
+            <button class="chip">Monitores</button>
+            <button class="chip">Hardware</button>
+            <button class="chip">Periféricos</button>
+          </div>
+        </div>
+
+        <div class="prod-grid" id="featuredGrid"></div>
+
+        <div class="callout" style="top: 60px; left: 36%;">
+          Chips de filtro — UI ya prevista.
+        </div>
+        <div class="stickynote tilt-r" style="top: 280px; right: -30px;">
+          <span class="tag">Card · producto</span>
+          Click en imagen → <b>detalle</b>. Click en <b>+</b> → agregar al carrito sin salir.
+        </div>
+      </div>
+    </section>
+
+    <!-- OFFER -->
+    <section class="section" style="padding-top: 0; padding-bottom: 80px; border-bottom: none;">
+      <div class="container">
+        <div class="offer">
+          <div>
+            <p class="offer-kicker">Drop de la semana</p>
+            <h3>ENVÍO GRATIS<br>en compras > <b>$1,500 MXN</b></h3>
+          </div>
+          <div class="offer-side">
+            <div class="offer-stat"><strong>24h</strong>CDMX express</div>
+            <button class="btn" onclick="navigate('catalogo')">Ver ofertas →</button>
+          </div>
+        </div>
+
+        <div class="stamp-note" style="top: 50px; right: 80px;">URGENTE · banner promo</div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section">
+      <div class="container">
+        <div class="section-tag">04 · Clientes Reales</div>
+        <h2 class="section-h">Lo que dicen<br>nuestros <em>gamers</em></h2>
+
+        <div class="testi-grid">
+          <div class="testi-card">
+            <div class="testi-stars">★ ★ ★ ★ ★</div>
+            <p class="testi-text">"La RTX 4060 llegó en 24 horas. El empaque impecable y el soporte respondió al instante. Mi setup nunca se vio tan brutal."</p>
+            <div class="testi-author"><b>Carlos M.</b> · CDMX · Gamer Pro</div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★ ★ ★ ★ ★</div>
+            <p class="testi-text">"Compré teclado y mouse para mi torneo. La calidad de construcción justifica cada peso. Recomiendo TECH/WHITE al 100%."</p>
+            <div class="testi-author"><b>Ana L.</b> · GDL · Streamer</div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★ ★ ★ ★ ★</div>
+            <p class="testi-text">"Setup builder me ahorró horas. Recomendaron la build perfecta para mi presupuesto y todo llegó listo. 10/10."</p>
+            <div class="testi-author"><b>Diego R.</b> · MTY · Creador</div>
+          </div>
+        </div>
+
+        <div class="annotation" style="bottom: -30px; left: 40px;">
+          <span class="num">03</span>
+          <b>Carrusel posible</b> en versión final · 6+ testimonios
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: CATALOG
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-catalogo">
+    <div class="container">
+      <div class="cat-page">
+        <aside class="cat-side">
+          <h4>Filtros</h4>
+          <div class="filter-group">
+            <h4 style="border: none; padding: 0; margin-bottom: 8px;">Categoría</h4>
+            <label><input type="checkbox" checked> Monitores</label>
+            <label><input type="checkbox" checked> Hardware</label>
+            <label><input type="checkbox" checked> Periféricos</label>
+          </div>
+          <div class="filter-group">
+            <h4 style="border: none; padding: 0; margin-bottom: 8px;">Marca</h4>
+            <label><input type="checkbox"> ZOTAC</label>
+            <label><input type="checkbox"> Samsung</label>
+            <label><input type="checkbox"> Logitech</label>
+            <label><input type="checkbox"> Razer</label>
+            <label><input type="checkbox"> Corsair</label>
+          </div>
+          <div class="filter-group">
+            <h4 style="border: none; padding: 0; margin-bottom: 8px;">Precio</h4>
+            <div class="price-bar"></div>
+            <div style="height: 30px;"></div>
+          </div>
+          <div class="filter-group">
+            <h4 style="border: none; padding: 0; margin-bottom: 8px;">Disponibilidad</h4>
+            <label><input type="checkbox" checked> En stock</label>
+            <label><input type="checkbox"> Pre-venta</label>
+          </div>
+
+          <div class="callout" style="position: relative; max-width: 100%; margin-top: 16px;">
+            Filtros se aplican <b>en vivo</b> sin reload.
+          </div>
+        </aside>
+
+        <main class="cat-main">
+          <div class="breadcrumbs">
+            <a onclick="navigate('home')">Inicio</a><span class="sep">/</span><span>Catálogo</span>
+          </div>
+          <h1 style="font-family: var(--serif); font-size: 48px; font-weight: 300; letter-spacing: -0.025em; margin-bottom: 18px;">Catálogo <em>completo</em></h1>
+          <p class="section-sub" style="margin-bottom: 30px;">20 productos en 3 categorías · Ordenamiento, búsqueda y paginación.</p>
+
+          <div class="cat-main-head">
+            <div class="count">Mostrando <b>20</b> productos</div>
+            <div class="sort">
+              <label>Ordenar</label>
+              <select>
+                <option>Relevancia</option>
+                <option>Precio: menor a mayor</option>
+                <option>Precio: mayor a menor</option>
+                <option>Más recientes</option>
+                <option>Más vendidos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cat-grid-3" id="catalogGrid"></div>
+
+          <div style="display: flex; justify-content: center; gap: 4px; margin-top: 50px;">
+            <button class="chip">‹</button>
+            <button class="chip active">1</button>
+            <button class="chip">2</button>
+            <button class="chip">3</button>
+            <button class="chip">›</button>
+          </div>
+
+        </main>
+
+        <div class="stickynote tilt-r" style="top: 100px; right: 30px;">
+          <span class="tag">Catálogo · Pieza clave</span>
+          <b>Sidebar</b> filtros + <b>grid</b> 3 cols + <b>orden</b> + <b>paginación</b>. Todo cliente, sin server.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: PRODUCT DETAIL
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-product">
+    <div class="container">
+      <div class="pd-page">
+        <div class="breadcrumbs">
+          <a onclick="navigate('home')">Inicio</a><span class="sep">/</span>
+          <a onclick="navigate('catalogo')">Catálogo</a><span class="sep">/</span>
+          <a onclick="navigate('catalogo','hardware')">Hardware</a><span class="sep">/</span>
+          <span id="pdBreadName">RTX 4060 Ti</span>
+        </div>
+
+        <div class="pd-grid">
+          <div class="pd-gallery">
+            <div class="pd-thumbs">
+              <div class="pd-thumb active placeholder cross"></div>
+              <div class="pd-thumb placeholder cross"></div>
+              <div class="pd-thumb placeholder cross"></div>
+              <div class="pd-thumb placeholder cross"></div>
+            </div>
+            <div class="pd-main-img placeholder cross"><span class="label" id="pdImgLabel">RTX 4060 Ti · vista 1</span></div>
+          </div>
+
+          <div class="pd-info">
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">
+              Hardware · GPU · ZOTAC
+            </div>
+            <h1 id="pdName">RTX 4060 Ti 8GB ZOTAC</h1>
+            <div class="stars">
+              <span>★★★★★</span> <span>4.8 · 247 reseñas</span>
+            </div>
+
+            <div class="pd-price-block">
+              <span class="now" id="pdPrice">$11,999</span>
+              <span class="was">$14,999</span>
+              <span class="save">−20%</span>
+            </div>
+
+            <p class="pd-desc">
+              GPU de gama media-alta con arquitectura Ada Lovelace. DLSS 3, Ray Tracing de tercera generación y consumo contenido.
+              Ideal para 1440p en alto rendimiento o 4K con DLSS activo.
+            </p>
+
+            <div class="pd-spec-grid">
+              <div><span>Arquitectura</span><b>Ada Lovelace</b></div>
+              <div><span>Memoria</span><b>8GB GDDR6</b></div>
+              <div><span>CUDA Cores</span><b>4352</b></div>
+              <div><span>Boost Clock</span><b>2535 MHz</b></div>
+            </div>
+
+            <div class="pd-cta">
+              <div class="pd-qty">
+                <button onclick="qtyChange(-1)">−</button>
+                <input type="text" value="1" id="pdQty">
+                <button onclick="qtyChange(1)">+</button>
+              </div>
+              <button class="btn primary" style="flex: 1;" onclick="addToCart('h1','RTX 4060 Ti',11999, parseInt(document.getElementById('pdQty').value))">
+                Agregar al carrito
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="icon-btn" title="Favorito">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+            </div>
+
+            <div class="pd-meta-row">
+              <span>📦 <b>Envío gratis</b> · llega en 24-48h en CDMX</span>
+              <span>↻ <b>Devoluciones</b> · 30 días sin costo</span>
+              <span>🛡 <b>Garantía</b> · 1 año oficial ZOTAC</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stickynote tilt-l" style="top: 120px; left: -130px;">
+          <span class="tag">Pieza · Detalle</span>
+          Galería con <b>thumbs</b> + <b>imagen principal</b>. Cantidad, fav y agregar al carrito persisten en localStorage.
+        </div>
+        <div class="annotation" style="top: 480px; right: 10px;">
+          <span class="num">04</span>
+          Specs en grid → fácil escaneo
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: CART
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-cart">
+    <div class="container">
+      <div class="cart-page">
+        <h1>Tu <em>carrito</em>.</h1>
+
+        <div>
+          <div class="cart-list" id="cartList">
+            <!-- rendered by JS -->
+          </div>
+          <div class="callout" style="position: relative; margin-top: 20px; max-width: 100%;">
+            ⚠ Estado <b>vacío</b> también está diseñado — al borrar todo aparece el placeholder con CTA al catálogo.
+          </div>
+        </div>
+
+        <aside class="cart-summary">
+          <h3>Resumen del pedido</h3>
+          <div class="summary-row"><span>Subtotal</span><b id="sumSubtotal">$0</b></div>
+          <div class="summary-row"><span>Envío</span><b id="sumShipping">—</b></div>
+          <div class="summary-row"><span>Descuento</span><b>—</b></div>
+
+          <div class="summary-promo">
+            <input type="text" placeholder="Código de descuento">
+            <button>Aplicar</button>
+          </div>
+
+          <div class="summary-row total"><span>Total</span><b id="sumTotal">$0</b></div>
+
+          <button class="btn primary" style="width: 100%; margin-top: 18px; justify-content: center;" onclick="navigate('checkout')">
+            Ir al checkout
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <p style="font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); margin-top: 16px; text-align: center; letter-spacing: 0.05em;">
+            Pago seguro · 256-bit SSL
+          </p>
+        </aside>
+
+        <div class="stickynote tilt-r" style="top: 200px; right: -50px;">
+          <span class="tag">Carrito</span>
+          Sidebar <b>sticky</b> con totales en vivo. Cupones simulados (TECH10, GAMER20).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: CHECKOUT
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-checkout">
+    <div class="container">
+      <div class="checkout-page">
+        <div class="breadcrumbs">
+          <a onclick="navigate('cart')">Carrito</a><span class="sep">/</span><span>Checkout</span>
+        </div>
+        <h1 style="font-family: var(--serif); font-size: 56px; font-weight: 300; letter-spacing: -0.03em; margin-bottom: 30px;">Finalizar <em>compra</em></h1>
+
+        <div class="steps">
+          <div class="step done" onclick="goStep(1)">
+            <div class="step-num">1</div>
+            <div class="step-info">
+              <h5>Paso 1</h5>
+              <p>Dirección</p>
+            </div>
+          </div>
+          <div class="step active" onclick="goStep(2)">
+            <div class="step-num">2</div>
+            <div class="step-info">
+              <h5>Paso 2</h5>
+              <p>Envío</p>
+            </div>
+          </div>
+          <div class="step" onclick="goStep(3)">
+            <div class="step-num">3</div>
+            <div class="step-info">
+              <h5>Paso 3</h5>
+              <p>Pago</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-grid">
+          <div>
+            <div class="form-card">
+              <h3>Método de envío</h3>
+              <p class="form-sub">Selecciona la opción que mejor se adapte a tu urgencia.</p>
+
+              <div class="shipping-options">
+                <label class="shipping-opt sel">
+                  <input type="radio" name="shipping" checked>
+                  <div style="flex:1">
+                    <div class="so-name">Express CDMX · 24h</div>
+                    <div class="so-eta">Entrega mañana antes de 8 PM</div>
+                  </div>
+                  <div class="so-price">Gratis</div>
+                </label>
+                <label class="shipping-opt">
+                  <input type="radio" name="shipping">
+                  <div style="flex:1">
+                    <div class="so-name">Estándar · 3-5 días</div>
+                    <div class="so-eta">Cobertura nacional</div>
+                  </div>
+                  <div class="so-price">$120</div>
+                </label>
+                <label class="shipping-opt">
+                  <input type="radio" name="shipping">
+                  <div style="flex:1">
+                    <div class="so-name">Recoger en tienda</div>
+                    <div class="so-eta">CDMX · Roma Norte</div>
+                  </div>
+                  <div class="so-price">Gratis</div>
+                </label>
+              </div>
+
+              <div style="margin-top: 30px; padding-top: 24px; border-top: 1px dashed var(--line-strong); display: flex; justify-content: space-between;">
+                <button class="btn ghost" onclick="goStep(1)">← Volver</button>
+                <button class="btn primary" onclick="goStep(3)">Continuar al pago →</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="cart-summary">
+            <h3>Tu pedido</h3>
+            <div class="summary-row"><span>Subtotal (3 items)</span><b>$15,997</b></div>
+            <div class="summary-row"><span>Envío express</span><b>Gratis</b></div>
+            <div class="summary-row"><span>Impuestos</span><b>$2,560</b></div>
+            <div class="summary-row total"><span>Total</span><b>$18,557</b></div>
+          </aside>
+        </div>
+
+        <div class="stickynote tilt-l" style="top: 80px; right: 0;">
+          <span class="tag">Checkout · 3 pasos</span>
+          Stepper <b>clickeable</b> · pasos completos quedan grises, el activo se enciende. Sticky summary a la derecha.
+        </div>
+        <div class="annotation" style="top: 220px; left: -30px;">
+          <span class="num">05</span>
+          Paso activo coloreado<br>en negro
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: ACCOUNT
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-cuenta">
+    <div class="container">
+      <div class="account-page">
+        <div class="account-card">
+          <h2>Bienvenido<br>de vuelta.</h2>
+          <p class="account-sub">Sistema de auth simulado — los datos persisten en localStorage para el prototipo.</p>
+
+          <div class="account-tabs">
+            <div class="account-tab active" onclick="acTab(this, 0)">Login</div>
+            <div class="account-tab" onclick="acTab(this, 1)">Registro</div>
+          </div>
+
+          <div id="acLogin">
+            <div class="field" style="margin-bottom: 20px;">
+              <label>Email</label>
+              <input type="email" placeholder="tu@email.com">
+            </div>
+            <div class="field" style="margin-bottom: 24px;">
+              <label>Contraseña</label>
+              <input type="password" placeholder="••••••••">
+            </div>
+            <div style="display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; margin-bottom: 24px;">
+              <label style="display: inline-flex; gap: 6px; cursor: pointer; color: var(--ink-soft);">
+                <input type="checkbox"> Recordarme
+              </label>
+              <a style="color: var(--pen-red); cursor: pointer;">¿Olvidaste tu contraseña?</a>
+            </div>
+            <button class="btn primary" style="width: 100%; justify-content: center;" onclick="mockLogin()">
+              Iniciar sesión
+            </button>
+          </div>
+        </div>
+
+        <div class="annotation" style="top: 100px; right: 200px;">
+          <span class="num">06</span>
+          Auth simulado · sin backend real<br>todo persiste en <b>localStorage</b>
+        </div>
+        <div class="arrow blue" style="top: 130px; right: 360px;">
+          <svg width="120" height="60">
+            <path d="M115 50 Q 60 20, 5 35" />
+            <path d="M10 30 L 0 35 L 8 42" stroke-dasharray="0" stroke="#2B4C7E" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       VIEW: SETUP BUILDER
+  ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-builder">
+    <div class="container">
+      <div class="builder-page">
+        <div class="builder-head">
+          <div class="section-tag">Setup Builder · feature pieza</div>
+          <h2 class="section-h" style="margin-top: 16px;">Arma tu <em>setup</em> ideal.</h2>
+          <p class="section-sub" style="margin: 16px auto 0;">Define presupuesto y caso de uso → recomendamos componentes compatibles. Cliente puro, sin IA.</p>
+        </div>
+
+        <div class="builder-frame">
+          <div class="builder-controls">
+            <h3>Configura</h3>
+
+            <div class="builder-block">
+              <h5>Presupuesto</h5>
+              <div class="budget-display"><span id="budgetVal">$20,000</span> <small>MXN</small></div>
+              <div class="range-track" id="rangeTrack" onclick="setRange(event)">
+                <div class="range-fill" id="rangeFill"></div>
+                <div class="range-thumb" id="rangeThumb"></div>
+              </div>
+              <div class="range-marks">
+                <span>$5K</span><span>$15K</span><span>$30K</span><span>$50K</span>
+              </div>
+            </div>
+
+            <div class="builder-block">
+              <h5>Caso de uso</h5>
+              <div class="usecase-grid">
+                <div class="usecase sel" onclick="selUse(this)">
+                  <div class="ico">▶</div>
+                  <b>Gaming</b>
+                  <span>Alto FPS, 1440p+</span>
+                </div>
+                <div class="usecase" onclick="selUse(this)">
+                  <div class="ico">◉</div>
+                  <b>Streaming</b>
+                  <span>Doble carga GPU/CPU</span>
+                </div>
+                <div class="usecase" onclick="selUse(this)">
+                  <div class="ico">▲</div>
+                  <b>Creador</b>
+                  <span>Render, video, 3D</span>
+                </div>
+                <div class="usecase" onclick="selUse(this)">
+                  <div class="ico">●</div>
+                  <b>Trabajo</b>
+                  <span>Productividad pura</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn primary" style="width: 100%; justify-content: center;" onclick="recalcBuild()">
+              Recalcular build
+              <svg viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </button>
+          </div>
+
+          <div class="builder-result">
+            <h4>Build recomendada</h4>
+            <div class="build-list" id="buildList">
+              <div class="build-item">
+                <div class="build-item-img placeholder cross"></div>
+                <div>
+                  <div class="build-item-cat">GPU</div>
+                  <div class="build-item-name">RTX 4060 Ti 8GB ZOTAC</div>
+                </div>
+                <div class="build-item-price">$11,999</div>
+              </div>
+              <div class="build-item">
+                <div class="build-item-img placeholder cross"></div>
+                <div>
+                  <div class="build-item-cat">CPU</div>
+                  <div class="build-item-name">Ryzen 5 7600X</div>
+                </div>
+                <div class="build-item-price">$5,499</div>
+              </div>
+              <div class="build-item">
+                <div class="build-item-img placeholder cross"></div>
+                <div>
+                  <div class="build-item-cat">Monitor</div>
+                  <div class="build-item-name">Samsung Odyssey G5 27"</div>
+                </div>
+                <div class="build-item-price">$5,899</div>
+              </div>
+              <div class="build-item">
+                <div class="build-item-img placeholder cross"></div>
+                <div>
+                  <div class="build-item-cat">Periféricos</div>
+                  <div class="build-item-name">Logitech G502 + G413</div>
+                </div>
+                <div class="build-item-price">$2,199</div>
+              </div>
+            </div>
+
+            <div class="build-total">
+              <div>
+                <small>Total estimado</small>
+                <b>$25,596</b>
+              </div>
+              <button class="btn" style="background: var(--paper); color: var(--ink);" onclick="addBuildToCart()">Agregar todo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stickynote tilt-r" style="top: 200px; right: -40px; width: 220px;">
+          <span class="tag">Setup Builder · alma del proyecto</span>
+          Lógica: presupuesto + caso de uso → algoritmo elige <b>4 piezas compatibles</b>. Click en "Agregar todo" mete los 4 al carrito.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h2>tech<span class="slash">/</span>white</h2>
+          <p>Hardware gaming. Estética impecable. Construido en CDMX. Prototipo funcional v0.1 — boceto pre-producción.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Tienda</h5>
+          <ul>
+            <li><a onclick="navigate('catalogo','monitores')">Monitores</a></li>
+            <li><a onclick="navigate('catalogo','hardware')">Hardware</a></li>
+            <li><a onclick="navigate('catalogo','perifericos')">Periféricos</a></li>
+            <li><a onclick="navigate('builder')">Setup Builder</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Cuenta</h5>
+          <ul>
+            <li><a onclick="navigate('cuenta')">Login</a></li>
+            <li><a onclick="navigate('cuenta')">Registro</a></li>
+            <li><a onclick="navigate('cart')">Carrito</a></li>
+            <li><a>Mis pedidos</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Soporte</h5>
+          <ul>
+            <li><a>Contacto</a></li>
+            <li><a>Envíos</a></li>
+            <li><a>Devoluciones</a></li>
+            <li><a>FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-foot">
+        <span>© 2026 TECH/WHITE · Prototipo</span>
+        <span>Hecho con ♡ en CDMX</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Producto agregado al carrito</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   PRODUCT DATA
+═══════════════════════════════════════════════ */
+const PRODUCTS = [
+  { id: 'h1', cat: 'Hardware',    name: 'RTX 4060 Ti 8GB ZOTAC',          price: 11999, was: 14999, badge: 'HOT' },
+  { id: 'h2', cat: 'Hardware',    name: 'Ryzen 7 7800X3D AMD',             price: 9499,  was: null,  badge: null },
+  { id: 'h3', cat: 'Hardware',    name: 'Corsair DDR5 32GB 6000MHz',       price: 3299,  was: null,  badge: null },
+  { id: 'h4', cat: 'Hardware',    name: 'Samsung 980 Pro 2TB NVMe',        price: 4499,  was: 5299,  badge: 'SALE' },
+  { id: 'm1', cat: 'Monitores',   name: 'Samsung Odyssey G5 27"',          price: 5899,  was: null,  badge: 'NEW' },
+  { id: 'm2', cat: 'Monitores',   name: 'LG UltraGear 32" 4K',             price: 12999, was: 15499, badge: null },
+  { id: 'm3', cat: 'Monitores',   name: 'ASUS ROG Swift 240Hz',            price: 8999,  was: null,  badge: null },
+  { id: 'p1', cat: 'Periféricos', name: 'Logitech G Pro X Superlight 2',   price: 3299,  was: null,  badge: 'HOT' },
+  { id: 'p2', cat: 'Periféricos', name: 'Razer BlackWidow V4 Pro',         price: 4799,  was: null,  badge: null },
+  { id: 'p3', cat: 'Periféricos', name: 'HyperX Cloud III Wireless',       price: 3499,  was: 3999,  badge: 'SALE' },
+  { id: 'p4', cat: 'Periféricos', name: 'Logitech G502 X Plus',            price: 2999,  was: null,  badge: null },
+  { id: 'h5', cat: 'Hardware',    name: 'NZXT H7 Flow Black',              price: 2799,  was: null,  badge: null },
+];
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let cart = JSON.parse(localStorage.getItem('proto_cart') || '[]');
+
+/* ═══════════════════════════════════════════════
+   RENDER GRID
+═══════════════════════════════════════════════ */
+function fmt(n) { return '$' + n.toLocaleString('en-US'); }
+
+function prodCard(p) {
+  return `
+    <div class="prod-card" onclick="navigate('product','${p.id}','${escapeHtml(p.name)}',${p.price})">
+      ${p.badge ? `<span class="ribbon">${p.badge}</span>` : ''}
+      <button class="fav" onclick="event.stopPropagation();toggleFav(this)">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <div class="prod-img placeholder cross"><span class="label">${p.id}</span></div>
+      <div class="prod-cat">${p.cat}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-foot">
+        <div class="prod-price">${fmt(p.price)}</div>
+        <button class="prod-add" onclick="event.stopPropagation();addToCart('${p.id}','${escapeHtml(p.name)}',${p.price})" title="Agregar al carrito">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+function escapeHtml(str) { return str.replace(/'/g, "\\'"); }
+
+function renderFeatured() {
+  const grid = document.getElementById('featuredGrid');
+  grid.innerHTML = PRODUCTS.slice(0, 8).map(prodCard).join('');
+}
+function renderCatalog() {
+  const grid = document.getElementById('catalogGrid');
+  grid.innerHTML = PRODUCTS.map(prodCard).join('');
+}
+
+function toggleFav(el) {
+  el.classList.toggle('on');
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function navigate(view, arg, name, price) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  let target = view;
+  if (view === 'product') {
+    target = 'product';
+    if (name) document.getElementById('pdName').textContent = name;
+    if (name) document.getElementById('pdBreadName').textContent = name;
+    if (name) document.getElementById('pdImgLabel').textContent = name + ' · vista 1';
+    if (price) document.getElementById('pdPrice').textContent = fmt(price);
+    document.getElementById('pdQty').dataset.id = arg || 'h1';
+    document.getElementById('pdQty').dataset.name = name || 'RTX 4060 Ti';
+    document.getElementById('pdQty').dataset.price = price || 11999;
+  }
+
+  const el = document.getElementById('view-' + target);
+  if (el) el.classList.add('active');
+
+  const link = document.querySelector('.nav-links a[data-page="' + view + '"]');
+  if (link) link.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  if (view === 'cart') renderCart();
+}
+
+/* ═══════════════════════════════════════════════
+   CART
+═══════════════════════════════════════════════ */
+function addToCart(id, name, price, qty = 1) {
+  const existing = cart.find(it => it.id === id);
+  if (existing) existing.qty += qty;
+  else cart.push({ id, name, price, qty });
+  saveCart();
+  updateBadge();
+  toast(`Agregado: ${name}`);
+}
+
+function saveCart() {
+  localStorage.setItem('proto_cart', JSON.stringify(cart));
+}
+
+function updateBadge() {
+  const total = cart.reduce((s, it) => s + it.qty, 0);
+  document.getElementById('cartBadge').textContent = total;
+  document.getElementById('cartBadge').style.display = total > 0 ? 'inline-flex' : 'inline-flex';
+}
+
+function renderCart() {
+  const list = document.getElementById('cartList');
+  if (cart.length === 0) {
+    list.innerHTML = `
+      <div style="padding: 60px 30px; text-align: center; font-family: var(--mono); color: var(--ink-soft);">
+        <div style="font-family: var(--serif); font-size: 28px; margin-bottom: 8px; color: var(--ink);">Tu carrito está vacío</div>
+        <p style="font-size: 12px; margin-bottom: 24px;">Aún no has agregado productos al carrito.</p>
+        <button class="btn primary" onclick="navigate('catalogo')">Explorar catálogo</button>
+      </div>`;
+    document.getElementById('sumSubtotal').textContent = '$0';
+    document.getElementById('sumShipping').textContent = '—';
+    document.getElementById('sumTotal').textContent = '$0';
+    return;
+  }
+
+  list.innerHTML = cart.map((it, i) => `
+    <div class="cart-row">
+      <div class="cart-row-img placeholder cross"><span class="label" style="font-size: 8px;">${it.id}</span></div>
+      <div>
+        <div class="cart-row-name">${it.name}</div>
+        <div class="cart-row-meta">SKU · ${it.id.toUpperCase()} · En stock</div>
+      </div>
+      <div class="cart-row-qty">
+        <button onclick="cartQty(${i},-1)">−</button>
+        <span>${it.qty}</span>
+        <button onclick="cartQty(${i},1)">+</button>
+      </div>
+      <div class="cart-row-price">${fmt(it.price * it.qty)}</div>
+      <button class="cart-row-rm" onclick="cartRemove(${i})" title="Eliminar">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`).join('');
+
+  const sub = cart.reduce((s, it) => s + it.price * it.qty, 0);
+  const ship = sub > 1500 ? 0 : 120;
+  const total = sub + ship;
+  document.getElementById('sumSubtotal').textContent = fmt(sub);
+  document.getElementById('sumShipping').textContent = ship === 0 ? 'Gratis' : fmt(ship);
+  document.getElementById('sumTotal').textContent = fmt(total);
+}
+
+function cartQty(i, d) {
+  cart[i].qty = Math.max(1, cart[i].qty + d);
+  saveCart(); updateBadge(); renderCart();
+}
+function cartRemove(i) {
+  cart.splice(i, 1);
+  saveCart(); updateBadge(); renderCart();
+}
+
+function qtyChange(d) {
+  const inp = document.getElementById('pdQty');
+  inp.value = Math.max(1, parseInt(inp.value) + d);
+}
+
+/* ═══════════════════════════════════════════════
+   CHECKOUT — stepper
+═══════════════════════════════════════════════ */
+function goStep(n) {
+  const steps = document.querySelectorAll('.steps .step');
+  steps.forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i < n - 1) s.classList.add('done');
+    if (i === n - 1) s.classList.add('active');
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   ACCOUNT TABS
+═══════════════════════════════════════════════ */
+function acTab(el, idx) {
+  document.querySelectorAll('.account-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  toast(idx === 0 ? 'Tab login activo' : 'Tab registro activo');
+}
+function mockLogin() {
+  toast('✓ Login simulado — bienvenido (mock)');
+  setTimeout(() => navigate('home'), 800);
+}
+
+/* ═══════════════════════════════════════════════
+   BUILDER
+═══════════════════════════════════════════════ */
+function setRange(e) {
+  const track = document.getElementById('rangeTrack');
+  const rect = track.getBoundingClientRect();
+  let pct = (e.clientX - rect.left) / rect.width;
+  pct = Math.max(0, Math.min(1, pct));
+  document.getElementById('rangeFill').style.width = (pct * 100) + '%';
+  document.getElementById('rangeThumb').style.left = (pct * 100) + '%';
+  const min = 5000, max = 50000;
+  const val = Math.round((min + pct * (max - min)) / 100) * 100;
+  document.getElementById('budgetVal').textContent = fmt(val);
+}
+
+function selUse(el) {
+  document.querySelectorAll('.usecase').forEach(u => u.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function recalcBuild() {
+  toast('✓ Build recalculada según parámetros');
+}
+
+function addBuildToCart() {
+  addToCart('h1', 'RTX 4060 Ti', 11999);
+  addToCart('h2', 'Ryzen 5 7600X', 5499);
+  addToCart('m1', 'Samsung Odyssey G5 27"', 5899);
+  addToCart('p1', 'Logitech G Pro X Superlight 2', 2199);
+  toast('✓ Build completa agregada al carrito');
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+/* ═══════════════════════════════════════════════
+   ANNOTATION TOGGLE
+═══════════════════════════════════════════════ */
+function toggleNotes() {
+  document.body.classList.toggle('notes-off');
+}
+
+/* ═══════════════════════════════════════════════
+   FILTER CHIPS
+═══════════════════════════════════════════════ */
+document.addEventListener('click', (e) => {
+  if (e.target.classList && e.target.classList.contains('chip') && e.target.closest('.prod-controls')) {
+    e.target.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+renderFeatured();
+renderCatalog();
+updateBadge();
+
+</script>
+</body>
+</html>
